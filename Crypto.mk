@@ -33,7 +33,7 @@ LOCAL_C_INCLUDES := $(log_c_includes)
 # in the NDK.
 ifeq (,$(TARGET_BUILD_APPS))
 LOCAL_CLANG := true
-ifeq ($(HOST_OS), darwin)
+ifeq ($(HOST_OS), darwin_does_not_wrok)
 LOCAL_ASFLAGS += -no-integrated-as
 LOCAL_CFLAGS += -no-integrated-as
 endif
