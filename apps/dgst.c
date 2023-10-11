@@ -117,6 +117,7 @@ int dgst_main(int argc, char **argv)
     if (md != NULL)
         digestname = argv[0];
 
+    opt_set_unknown_name("digest");
     prog = opt_init(argc, argv, dgst_options);
     while ((o = opt_next()) != OPT_EOF) {
         switch (o) {
@@ -320,6 +321,8 @@ int dgst_main(int argc, char **argv)
         sigkey = app_keygen(mac_ctx, mac_name, 0, 0 /* not verbose */);
         /* Verbose output would make external-tests gost-engine fail */
         EVP_PKEY_CTX_free(mac_ctx);
+        if (sigkey == NULL)
+            goto end;
     }
 
     if (hmac_key != NULL) {
@@ -512,7 +515,7 @@ static void show_digests(const OBJ_NAME *name, void *arg)
  * in the '*sum' checksum programs. This aims to preserve backward
  * compatibility.
  */
-static const char *newline_escape_filename(const char *file, int * backslash)
+static const char *newline_escape_filename(const char *file, int *backslash)
 {
     size_t i, e = 0, length = strlen(file), newline_count = 0, mem_len = 0;
     char *file_cpy = NULL;
@@ -525,7 +528,7 @@ static const char *newline_escape_filename(const char *file, int * backslash)
     file_cpy = app_malloc(mem_len, file);
     i = 0;
 
-    while(e < length) {
+    while (e < length) {
         const char c = file[e];
         if (c == '\n') {
             file_cpy[i++] = '\\';

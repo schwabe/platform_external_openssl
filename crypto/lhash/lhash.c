@@ -1,5 +1,5 @@
 /*
- * Copyright 1995-2022 The OpenSSL Project Authors. All Rights Reserved.
+ * Copyright 1995-2023 The OpenSSL Project Authors. All Rights Reserved.
  *
  * Licensed under the Apache License 2.0 (the "License").  You may not use
  * this file except in compliance with the License.  You can obtain a copy
@@ -48,14 +48,8 @@ OPENSSL_LHASH *OPENSSL_LH_new(OPENSSL_LH_HASHFUNC h, OPENSSL_LH_COMPFUNC c)
 {
     OPENSSL_LHASH *ret;
 
-    if ((ret = OPENSSL_zalloc(sizeof(*ret))) == NULL) {
-        /*
-         * Do not set the error code, because the ERR code uses LHASH
-         * and we want to avoid possible endless error loop.
-         * ERR_raise(ERR_LIB_CRYPTO, ERR_R_MALLOC_FAILURE);
-         */
+    if ((ret = OPENSSL_zalloc(sizeof(*ret))) == NULL)
         return NULL;
-    }
     if ((ret->b = OPENSSL_zalloc(sizeof(*ret->b) * MIN_NODES)) == NULL)
         goto err;
     ret->comp = ((c == NULL) ? (OPENSSL_LH_COMPFUNC)strcmp : c);
@@ -264,14 +258,14 @@ static void contract(OPENSSL_LHASH *lh)
         n = OPENSSL_realloc(lh->b,
                             (unsigned int)(sizeof(OPENSSL_LH_NODE *) * lh->pmax));
         if (n == NULL) {
-            /* fputs("realloc error in lhash",stderr); */
+            /* fputs("realloc error in lhash", stderr); */
             lh->error++;
-            return;
+        } else {
+            lh->b = n;
         }
         lh->num_alloc_nodes /= 2;
         lh->pmax /= 2;
         lh->p = lh->pmax - 1;
-        lh->b = n;
     } else
         lh->p--;
 

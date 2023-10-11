@@ -121,29 +121,29 @@ void gcm_ghash_p8(u64 Xi[2],const u128 Htable[16],const u8 *inp, size_t len);
                                 (gctx)->gcm.funcs.ghash==gcm_ghash_v8)
 /* The [unroll8_eor3_]aes_gcm_(enc|dec)_(128|192|256)_kernel() functions
  * take input length in BITS and return number of BYTES processed */
-size_t aes_gcm_enc_128_kernel(const uint8_t * plaintext, uint64_t plaintext_length, uint8_t * ciphertext,
+size_t aes_gcm_enc_128_kernel(const uint8_t *plaintext, uint64_t plaintext_length, uint8_t *ciphertext,
                               uint64_t *Xi, unsigned char ivec[16], const void *key);
-size_t aes_gcm_enc_192_kernel(const uint8_t * plaintext, uint64_t plaintext_length, uint8_t * ciphertext,
+size_t aes_gcm_enc_192_kernel(const uint8_t *plaintext, uint64_t plaintext_length, uint8_t *ciphertext,
                               uint64_t *Xi, unsigned char ivec[16], const void *key);
-size_t aes_gcm_enc_256_kernel(const uint8_t * plaintext, uint64_t plaintext_length, uint8_t * ciphertext,
+size_t aes_gcm_enc_256_kernel(const uint8_t *plaintext, uint64_t plaintext_length, uint8_t *ciphertext,
                               uint64_t *Xi, unsigned char ivec[16], const void *key);
-size_t aes_gcm_dec_128_kernel(const uint8_t * ciphertext, uint64_t plaintext_length, uint8_t * plaintext,
+size_t aes_gcm_dec_128_kernel(const uint8_t *ciphertext, uint64_t plaintext_length, uint8_t *plaintext,
                               uint64_t *Xi, unsigned char ivec[16], const void *key);
-size_t aes_gcm_dec_192_kernel(const uint8_t * ciphertext, uint64_t plaintext_length, uint8_t * plaintext,
+size_t aes_gcm_dec_192_kernel(const uint8_t *ciphertext, uint64_t plaintext_length, uint8_t *plaintext,
                               uint64_t *Xi, unsigned char ivec[16], const void *key);
-size_t aes_gcm_dec_256_kernel(const uint8_t * ciphertext, uint64_t plaintext_length, uint8_t * plaintext,
+size_t aes_gcm_dec_256_kernel(const uint8_t *ciphertext, uint64_t plaintext_length, uint8_t *plaintext,
                               uint64_t *Xi, unsigned char ivec[16], const void *key);
-size_t unroll8_eor3_aes_gcm_enc_128_kernel(const uint8_t * plaintext, uint64_t plaintext_length, uint8_t * ciphertext,
+size_t unroll8_eor3_aes_gcm_enc_128_kernel(const uint8_t *plaintext, uint64_t plaintext_length, uint8_t *ciphertext,
                               uint64_t *Xi, unsigned char ivec[16], const void *key);
-size_t unroll8_eor3_aes_gcm_enc_192_kernel(const uint8_t * plaintext, uint64_t plaintext_length, uint8_t * ciphertext,
+size_t unroll8_eor3_aes_gcm_enc_192_kernel(const uint8_t *plaintext, uint64_t plaintext_length, uint8_t *ciphertext,
                               uint64_t *Xi, unsigned char ivec[16], const void *key);
-size_t unroll8_eor3_aes_gcm_enc_256_kernel(const uint8_t * plaintext, uint64_t plaintext_length, uint8_t * ciphertext,
+size_t unroll8_eor3_aes_gcm_enc_256_kernel(const uint8_t *plaintext, uint64_t plaintext_length, uint8_t *ciphertext,
                               uint64_t *Xi, unsigned char ivec[16], const void *key);
-size_t unroll8_eor3_aes_gcm_dec_128_kernel(const uint8_t * ciphertext, uint64_t plaintext_length, uint8_t * plaintext,
+size_t unroll8_eor3_aes_gcm_dec_128_kernel(const uint8_t *ciphertext, uint64_t plaintext_length, uint8_t *plaintext,
                               uint64_t *Xi, unsigned char ivec[16], const void *key);
-size_t unroll8_eor3_aes_gcm_dec_192_kernel(const uint8_t * ciphertext, uint64_t plaintext_length, uint8_t * plaintext,
+size_t unroll8_eor3_aes_gcm_dec_192_kernel(const uint8_t *ciphertext, uint64_t plaintext_length, uint8_t *plaintext,
                               uint64_t *Xi, unsigned char ivec[16], const void *key);
-size_t unroll8_eor3_aes_gcm_dec_256_kernel(const uint8_t * ciphertext, uint64_t plaintext_length, uint8_t * plaintext,
+size_t unroll8_eor3_aes_gcm_dec_256_kernel(const uint8_t *ciphertext, uint64_t plaintext_length, uint8_t *plaintext,
                               uint64_t *Xi, unsigned char ivec[16], const void *key);
 size_t armv8_aes_gcm_encrypt(const unsigned char *in, unsigned char *out, size_t len, const void *key,
                              unsigned char ivec[16], u64 *Xi);
@@ -434,7 +434,6 @@ void aes256_t4_xts_decrypt(const unsigned char *in, unsigned char *out,
 # elif defined(OPENSSL_CPUID_OBJ) && defined(__riscv) && __riscv_xlen == 64
 /* RISC-V 64 support */
 #  include "riscv_arch.h"
-#  define RV64I_ZKND_ZKNE_CAPABLE   (RISCV_HAS_ZKND() && RISCV_HAS_ZKNE())
 
 int rv64i_zkne_set_encrypt_key(const unsigned char *userKey, const int bits,
                           AES_KEY *key);
@@ -447,8 +446,6 @@ void rv64i_zknd_decrypt(const unsigned char *in, unsigned char *out,
 # elif defined(OPENSSL_CPUID_OBJ) && defined(__riscv) && __riscv_xlen == 32
 /* RISC-V 32 support */
 #  include "riscv_arch.h"
-#  define RV32I_ZKND_ZKNE_CAPABLE   (RISCV_HAS_ZKND() && RISCV_HAS_ZKNE())
-#  define RV32I_ZBKB_ZKND_ZKNE_CAPABLE   (RV32I_ZKND_ZKNE_CAPABLE && RISCV_HAS_ZBKB())
 
 int rv32i_zkne_set_encrypt_key(const unsigned char *userKey, const int bits,
                                AES_KEY *key);

@@ -1,5 +1,5 @@
 /*
- * Copyright 1995-2022 The OpenSSL Project Authors. All Rights Reserved.
+ * Copyright 1995-2023 The OpenSSL Project Authors. All Rights Reserved.
  *
  * Licensed under the Apache License 2.0 (the "License").  You may not use
  * this file except in compliance with the License.  You can obtain a copy
@@ -170,9 +170,15 @@ void ossl_malloc_setup_failures(void)
 
 void *CRYPTO_malloc(size_t num, const char *file, int line)
 {
+    void *ptr;
+
     INCREMENT(malloc_count);
-    if (malloc_impl != CRYPTO_malloc)
-        return malloc_impl(num, file, line);
+    if (malloc_impl != CRYPTO_malloc) {
+        ptr = malloc_impl(num, file, line);
+        if (ptr != NULL || num == 0)
+            return ptr;
+        goto err;
+    }
 
     if (num == 0)
         return NULL;
@@ -187,7 +193,20 @@ void *CRYPTO_malloc(size_t num, const char *file, int line)
         allow_customize = 0;
     }
 
-    return malloc(num);
+    ptr = malloc(num);
+    if (ptr != NULL)
+        return ptr;
+ err:
+    /*
+     * ossl_err_get_state_int() in err.c uses CRYPTO_zalloc(num, NULL, 0) for
+     * ERR_STATE allocation. Prevent mem alloc error loop while reporting error.
+     */
+    if (file != NULL || line != 0) {
+        ERR_new();
+        ERR_set_debug(file, line, NULL);
+        ERR_set_error(ERR_LIB_CRYPTO, ERR_R_MALLOC_FAILURE, NULL);
+    }
+    return NULL;
 }
 
 void *CRYPTO_zalloc(size_t num, const char *file, int line)
@@ -195,7 +214,6 @@ void *CRYPTO_zalloc(size_t num, const char *file, int line)
     void *ret;
 
     ret = CRYPTO_malloc(num, file, line);
-    FAILTEST();
     if (ret != NULL)
         memset(ret, 0, num);
 
@@ -208,7 +226,6 @@ void *CRYPTO_realloc(void *str, size_t num, const char *file, int line)
     if (realloc_impl != CRYPTO_realloc)
         return realloc_impl(str, num, file, line);
 
-    FAILTEST();
     if (str == NULL)
         return CRYPTO_malloc(num, file, line);
 
@@ -217,6 +234,7 @@ void *CRYPTO_realloc(void *str, size_t num, const char *file, int line)
         return NULL;
     }
 
+    FAILTEST();
     return realloc(str, num);
 }
 

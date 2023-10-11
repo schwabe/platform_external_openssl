@@ -256,13 +256,13 @@ function generate_build_config_headers() {
     PERL=/usr/bin/perl run_verbose ./Configure $CONFIGURE_ARGS ${!configure_args_bits} ${!configure_args_stat}
   fi
 
-  make include/openssl/configuration.h
-  make include/openssl/opensslv.h
+  make include/openssl/configuration.h include/openssl/opensslv.h
   make include/crypto/bn_conf.h include/openssl/lhash.h include/crypto/dso_conf.h
   make providers/common/include/prov/der_ec.h providers/common/include/prov/der_ecx.h providers/common/include/prov/der_sm2.h providers/common/include/prov/der_dsa.h providers/common/include/prov/der_rsa.h providers/common/include/prov/der_digests.h providers/common/include/prov/der_wrap.h
   make providers/common/der/der_digests_gen.c providers/common/der/der_ecx_gen.c providers/common/der/der_ec_gen.c providers/common/der/der_dsa_gen.c  providers/common/der/der_rsa_gen.c providers/common/der/der_sm2_gen.c providers/common/der/der_wrap_gen.c
-  make include/openssl/asn1.h include/openssl/asn1t.h include/openssl/bio.h include/openssl/cmp.h include/openssl/cms.h include/openssl/conf.h include/openssl/configuration.h include/openssl/crmf.h include/openssl/crypto.h include/openssl/ct.h include/openssl/err.h include/openssl/ess.h include/openssl/fipskey.h include/openssl/ocsp.h include/openssl/opensslv.h include/openssl/pkcs12.h include/openssl/pkcs7.h include/openssl/safestack.h include/openssl/srp.h include/openssl/ssl.h include/openssl/ui.h include/openssl/x509.h include/openssl/x509_vfy.h include/openssl/x509v3.h
-
+  make include/openssl/asn1.h include/openssl/asn1t.h include/openssl/bio.h include/openssl/cmp.h include/openssl/cms.h include/openssl/conf.h include/openssl/configuration.h include/openssl/crmf.h include/openssl/crypto.h include/openssl/ct.h include/openssl/err.h include/openssl/ess.h
+  make include/openssl/fipskey.h include/openssl/ocsp.h include/openssl/opensslv.h include/openssl/pkcs12.h include/openssl/pkcs7.h include/openssl/safestack.h include/openssl/srp.h include/openssl/ssl.h include/openssl/ui.h include/openssl/x509.h include/openssl/x509_vfy.h include/openssl/x509v3.h
+  make include/openssl/core_names.h include/internal/param_names.h crypto/params_idx.c
 
   rm -f apps/CA.pl.bak openssl/opensslconf.h.bak
   mv -f include/crypto/bn_conf.h include/crypto/bn_conf-$outname.h
@@ -556,6 +556,7 @@ function import() {
   gen_asm_arm64 crypto/arm64cpuid.pl
   gen_asm_arm64 crypto/poly1305/asm/poly1305-armv8.pl
   gen_asm_arm64 crypto/ec/asm/ecp_nistz256-armv8.pl
+  gen_asm_arm64 crypto/ec/asm/ecp_sm2p256-armv8.pl
   gen_asm_arm64 crypto/poly1305/asm/poly1305-armv8.pl
   gen_asm_arm64 crypto/bn/asm/armv8-mont.pl
   gen_asm_arm64 crypto/sha/asm/keccak1600-armv8.pl
@@ -565,6 +566,8 @@ function import() {
   gen_asm_arm64	crypto/chacha/asm/chacha-armv8-sve.pl
   gen_asm_arm64 crypto/md5/asm/md5-aarch64.pl
   gen_asm_arm64 crypto/sm3/asm/sm3-armv8.pl
+  gen_asm_arm64 crypto/sm4/asm/vpsm4_ex-armv8.pl
+
 
 
   # Generate x86 asm

@@ -223,6 +223,9 @@ static int dsa_export(void *keydata, int selection, OSSL_CALLBACK *param_cb,
     if (!ossl_prov_is_running() || dsa == NULL)
         return 0;
 
+    if ((selection & DSA_POSSIBLE_SELECTIONS) == 0)
+        return 0;
+
     tmpl = OSSL_PARAM_BLD_new();
     if (tmpl == NULL)
         return 0;
@@ -587,10 +590,9 @@ static void *dsa_gen(void *genctx, OSSL_CALLBACK *osslcb, void *cbarg)
     } else if (gctx->hindex != 0) {
         ossl_ffc_params_set_h(ffc, gctx->hindex);
     }
-    if (gctx->mdname != NULL) {
-        if (!ossl_ffc_set_digest(ffc, gctx->mdname, gctx->mdprops))
-            goto end;
-    }
+    if (gctx->mdname != NULL)
+        ossl_ffc_set_digest(ffc, gctx->mdname, gctx->mdprops);
+
     if ((gctx->selection & OSSL_KEYMGMT_SELECT_DOMAIN_PARAMETERS) != 0) {
 
          if (ossl_dsa_generate_ffc_parameters(dsa, gctx->gen_type,
@@ -673,5 +675,5 @@ const OSSL_DISPATCH ossl_dsa_keymgmt_functions[] = {
     { OSSL_FUNC_KEYMGMT_EXPORT, (void (*)(void))dsa_export },
     { OSSL_FUNC_KEYMGMT_EXPORT_TYPES, (void (*)(void))dsa_export_types },
     { OSSL_FUNC_KEYMGMT_DUP, (void (*)(void))dsa_dup },
-    { 0, NULL }
+    OSSL_DISPATCH_END
 };

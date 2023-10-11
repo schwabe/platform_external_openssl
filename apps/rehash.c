@@ -212,11 +212,11 @@ static int handle_symlink(const char *filename, const char *fullpath)
     }
     if (filename[i++] != '.')
         return -1;
-    for (type = OSSL_NELEM(suffixes) - 1; type > 0; type--) {
-        const char *suffix = suffixes[type];
-        if (OPENSSL_strncasecmp(suffix, &filename[i], strlen(suffix)) == 0)
+    for (type = OSSL_NELEM(suffixes) - 1; type > 0; type--)
+        if (OPENSSL_strncasecmp(&filename[i],
+                                suffixes[type], strlen(suffixes[type])) == 0)
             break;
-    }
+
     i += strlen(suffixes[type]);
 
     id = strtoul(&filename[i], &endptr, 10);

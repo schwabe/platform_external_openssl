@@ -613,6 +613,7 @@ arm64_clang_asflags := \
 arm64_cflags := \
   -DBSAES_ASM \
   -DECP_NISTZ256_ASM \
+  -DECP_SM2P256_ASM \
   -DKECCAK1600_ASM \
   -DMD5_ASM \
   -DOPENSSL_BN_ASM_MONT \
