@@ -1872,4 +1872,5 @@ sha512_block_data_order_neon:
 .align	2
 #if __ARM_MAX_ARCH__>=7 && !defined(__KERNEL__)
 .extern	OPENSSL_armcap_P
+.hidden	OPENSSL_armcap_P
 #endif
