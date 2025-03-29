@@ -263,7 +263,7 @@ function generate_build_config_headers() {
   make include/openssl/asn1.h include/openssl/asn1t.h include/openssl/bio.h include/openssl/cmp.h include/openssl/cms.h include/openssl/conf.h include/openssl/configuration.h include/openssl/crmf.h include/openssl/crypto.h include/openssl/ct.h include/openssl/err.h include/openssl/ess.h
   make include/openssl/fipskey.h include/openssl/ocsp.h include/openssl/opensslv.h include/openssl/pkcs12.h include/openssl/pkcs7.h include/openssl/safestack.h include/openssl/srp.h include/openssl/ssl.h include/openssl/ui.h include/openssl/x509.h include/openssl/x509_vfy.h include/openssl/x509v3.h
   make include/openssl/core_names.h include/internal/param_names.h crypto/params_idx.c
-  make include/openssl/comp.h include/openssl/x509_acert.h
+  make include/openssl/comp.h include/openssl/x509_acert.h 	providers/common/include/prov/der_ml_dsa.h providers/common/include/prov/der_slh_dsa.h providers/common/der/der_slh_dsa_gen.c providers/common/der/der_ml_dsa_gen.c
 
   rm -f apps/CA.pl.bak openssl/opensslconf.h.bak
   mv -f include/crypto/bn_conf.h include/crypto/bn_conf-$outname.h
@@ -618,6 +618,8 @@ function import() {
   gen_asm_x86_64 crypto/aes/asm/aesni-sha256-x86_64.pl
   gen_asm_x86_64 crypto/aes/asm/aesni-x86_64.pl
   gen_asm_x86_64 crypto/aes/asm/bsaes-x86_64.pl
+	gen_asm_x86_64 crypto/modes/asm/aes-gcm-avx512.pl
+ 	gen_asm_x86_64 crypto/aes/asm/aesni-xts-avx512.pl
 
   gen_asm_x86_64 crypto/md5/asm/md5-x86_64.pl
   gen_asm_x86_64 crypto/bn/asm/x86_64-mont.pl
@@ -640,7 +642,9 @@ function import() {
 	gen_asm_x86_64 crypto/bn/asm/rsaz-2k-avx512.pl
 	gen_asm_x86_64 crypto/bn/asm/rsaz-3k-avx512.pl
 	gen_asm_x86_64 crypto/bn/asm/rsaz-4k-avx512.pl
-	gen_asm_x86_64 crypto/modes/asm/aes-gcm-avx512.pl
+	gen_asm_x86_64 crypto/bn/asm/rsaz-2k-avxifma.pl
+  gen_asm_x86_64 crypto/bn/asm/rsaz-3k-avxifma.pl
+  gen_asm_x86_64 crypto/bn/asm/rsaz-4k-avxifma.pl
 
   gen_asm_x86_64 crypto/chacha/asm/chacha-x86_64.pl
   

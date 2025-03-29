@@ -1,5 +1,5 @@
 /*
- * Copyright 1995-2024 The OpenSSL Project Authors. All Rights Reserved.
+ * Copyright 1995-2025 The OpenSSL Project Authors. All Rights Reserved.
  * Copyright 2005 Nokia. All rights reserved.
  *
  * Licensed under the Apache License 2.0 (the "License").  You may not use
@@ -16,6 +16,7 @@
 #include <errno.h>
 #include <openssl/e_os2.h>
 #include "internal/nelem.h"
+#include "internal/sockets.h" /* for openssl_fdset() */
 
 #ifndef OPENSSL_NO_SOCK
 
@@ -207,7 +208,8 @@ static int psk_use_session_cb(SSL *s, const EVP_MD *md,
     const SSL_CIPHER *cipher = NULL;
 
     if (psksess != NULL) {
-        SSL_SESSION_up_ref(psksess);
+        if (!SSL_SESSION_up_ref(psksess))
+            goto err;
         usesess = psksess;
     } else {
         long key_len;
