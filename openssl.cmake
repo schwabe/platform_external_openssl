@@ -77,13 +77,11 @@ set(crypto_srcs
         crypto/async/async.c
         crypto/async/async_err.c
         crypto/async/async_wait.c
-
         crypto/bf/bf_cfb64.c
         crypto/bf/bf_ecb.c
         crypto/bf/bf_enc.c
         crypto/bf/bf_ofb64.c
         crypto/bf/bf_skey.c
-
         crypto/bio/bf_buff.c
         crypto/bio/bf_nbio.c
         crypto/bio/bf_null.c
@@ -332,10 +330,7 @@ set(crypto_srcs
         crypto/err/err_prn.c
         crypto/err/err_blocks.c
         crypto/err/err.c
-        crypto/err/openssl.txt
         crypto/err/err_all_legacy.c
-        crypto/err/build.info
-        crypto/err/err_local.h
         crypto/err/err_all.c
         crypto/ess/ess_asn1.c
         crypto/ess/ess_err.c
@@ -597,7 +592,6 @@ set(crypto_srcs
         crypto/slh_dsa/slh_wots.c
         crypto/slh_dsa/slh_hash.c
         crypto/slh_dsa/slh_dsa_key.c
-        crypto/slh_dsa/slh_dsa_local.h
         crypto/slh_dsa/slh_adrs.c
         crypto/slh_dsa/slh_params.c
         crypto/sm2/sm2_err.c
@@ -626,7 +620,6 @@ set(crypto_srcs
         crypto/thread/arch/thread_posix.c
         crypto/thread/api.c
         crypto/thread/arch.c
-        crypto/thread/build.info
         crypto/thread/internal.c
         crypto/time.c
         crypto/trace.c
@@ -749,7 +742,6 @@ if (${ANDROID_ABI} STREQUAL "armeabi-v7a")
             crypto/sha/asm/sha512-armv4.S
             crypto/sha/asm/keccak1600-armv4.S
             )
-
 elseif (${ANDROID_ABI} STREQUAL "arm64-v8a")
     set(crypto_srcs ${crypto_srcs}
             crypto/aes/aes_core.c
@@ -846,7 +838,6 @@ elseif (${ANDROID_ABI} STREQUAL "x86_64")
             crypto/x86_64cpuid.S
             crypto/aes/asm/aesni-xts-avx512.S
             )
-
     list(REMOVE_ITEM crypto_srcs
             crypto/aes/aes_cbc.c
             crypto/bn/bn_asm.c
@@ -899,7 +890,6 @@ set(provider_srcs
         providers/implementations/ciphers/cipher_aes_gcm.c
         providers/implementations/ciphers/cipher_aes_gcm_hw.c
         providers/implementations/ciphers/cipher_aes_gcm_siv.c
-        providers/implementations/ciphers/cipher_aes_gcm_siv.h
         providers/implementations/ciphers/cipher_aes_gcm_siv_hw.c
         providers/implementations/ciphers/cipher_aes_gcm_siv_polyval.c
         providers/implementations/ciphers/cipher_aes_hw.c
@@ -936,14 +926,10 @@ set(provider_srcs
         providers/implementations/ciphers/cipher_sm4.c
         providers/implementations/ciphers/cipher_sm4_ccm.c
         providers/implementations/ciphers/cipher_sm4_ccm_hw.c
-        providers/implementations/ciphers/cipher_sm4_ccm_hw.c
         providers/implementations/ciphers/cipher_sm4_gcm.c
         providers/implementations/ciphers/cipher_sm4_gcm_hw.c
         providers/implementations/ciphers/cipher_sm4_hw.c
         providers/implementations/ciphers/cipher_sm4_xts.c
-        providers/implementations/ciphers/cipher_sm4_xts.c
-        providers/implementations/ciphers/cipher_sm4_xts.h
-        providers/implementations/ciphers/cipher_sm4_xts_hw.c
         providers/implementations/ciphers/cipher_sm4_xts_hw.c
         providers/implementations/ciphers/cipher_tdes.c
         providers/implementations/ciphers/cipher_tdes_common.c
@@ -953,7 +939,6 @@ set(provider_srcs
         providers/implementations/ciphers/cipher_tdes_wrap.c
         providers/implementations/ciphers/cipher_tdes_wrap_hw.c
         providers/implementations/ciphers/ciphercommon.c
-        providers/implementations/ciphers/ciphercommon_block.c
         providers/implementations/ciphers/ciphercommon_block.c
         providers/implementations/ciphers/ciphercommon_ccm.c
         providers/implementations/ciphers/ciphercommon_ccm_hw.c
@@ -1004,7 +989,6 @@ set(provider_srcs
         providers/implementations/kdfs/tls1_prf.c
         providers/implementations/kdfs/x942kdf.c
         providers/implementations/kem/ec_kem.c
-        providers/implementations/kem/eckem.h
         providers/implementations/kem/ecx_kem.c
         providers/implementations/kem/kem_util.c
         providers/implementations/kem/ml_kem_kem.c
@@ -1052,7 +1036,7 @@ set(provider_srcs
         providers/implementations/storemgmt/file_store_any2obj.c
         providers/nullprov.c
         providers/prov_running.c
-)
+        )
 
 set(legacy_srcs
         providers/legacyprov.c
@@ -1060,7 +1044,7 @@ set(legacy_srcs
         providers/implementations/ciphers/cipher_rc4_hmac_md5.c
         providers/implementations/ciphers/cipher_rc4.c
         providers/implementations/kdfs/pbkdf1.c
-)
+        )
 
 PREPEND(crypto_srcs_with_path ${OPENSSL_PATH} ${provider_srcs} ${legacy_srcs} ${crypto_srcs})
 add_library(crypto ${SSLLIBTYPE} ${crypto_srcs_with_path})
@@ -1076,11 +1060,10 @@ target_include_directories(crypto PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/openssl/providers/common/include/
         ${CMAKE_CURRENT_SOURCE_DIR}/openssl/providers/implementations/include/
         ${CMAKE_CURRENT_SOURCE_DIR}/openssl/providers/fips/include/
-)
+        )
 
 target_include_directories(crypto PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/openssl/crypto/modes
-
         )
 
 target_compile_definitions(crypto PRIVATE -DNO_WINDOWS_BRAINDEATH -DMODULESDIR="ossl-modules" -DOPENSSL_BUILDING_OPENSSL)
@@ -1107,8 +1090,6 @@ if (${ANDROID_ABI} STREQUAL "armeabi-v7a")
             -DGHASH_ASM
             -DOPENSSL_BN_ASM_GF2m
             )
-
-
 elseif (${ANDROID_ABI} STREQUAL "arm64-v8a")
     target_compile_definitions(crypto PRIVATE
             -DPOLY1305_ASM
@@ -1162,7 +1143,6 @@ else ()
             )
 endif ()
 
-
 ################## SSL Library ###########################################
 
 set(ssl_srcs
@@ -1180,24 +1160,20 @@ set(ssl_srcs
         ssl/quic/quic_ackm.c
         ssl/quic/quic_cfq.c
         ssl/quic/quic_channel.c
-        ssl/quic/quic_channel_local.h
         ssl/quic/quic_demux.c
         ssl/quic/quic_engine.c
         ssl/quic/quic_fc.c
         ssl/quic/quic_fifd.c
         ssl/quic/quic_impl.c
         ssl/quic/quic_lcidm.c
-        ssl/quic/quic_local.h
         ssl/quic/quic_method.c
         ssl/quic/quic_obj.c
-        ssl/quic/quic_obj_local.h
         ssl/quic/quic_port.c
         ssl/quic/quic_rcidm.c
         ssl/quic/quic_reactor.c
         ssl/quic/quic_reactor_wait_ctx.c
         ssl/quic/quic_record_rx.c
         ssl/quic/quic_record_shared.c
-        ssl/quic/quic_record_shared.h
         ssl/quic/quic_record_tx.c
         ssl/quic/quic_record_util.c
         ssl/quic/quic_rstream.c
@@ -1268,7 +1244,6 @@ set(ssl_srcs
 PREPEND(ssl_srcs_with_path ${OPENSSL_PATH} ${ssl_srcs})
 add_library(ssl ${SSLLIBTYPE} ${ssl_srcs_with_path})
 target_compile_definitions(ssl PRIVATE -DOPENSSL_BUILDING_OPENSSL)
-
 
 target_link_libraries(ssl crypto)
 
