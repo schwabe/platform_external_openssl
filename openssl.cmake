@@ -837,6 +837,9 @@ elseif (${ANDROID_ABI} STREQUAL "x86_64")
             crypto/ec/asm/x25519-x86_64.S
             crypto/x86_64cpuid.S
             crypto/aes/asm/aesni-xts-avx512.S
+            crypto/bn/asm/rsaz-2k-avxifma.S
+            crypto/bn/asm/rsaz-4k-avxifma.S
+            crypto/bn/asm/rsaz-3k-avxifma.S
             )
     list(REMOVE_ITEM crypto_srcs
             crypto/aes/aes_cbc.c

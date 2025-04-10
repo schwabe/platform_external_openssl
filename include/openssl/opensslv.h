@@ -39,7 +39,7 @@ extern "C" {
  */
 
 /* Could be: #define OPENSSL_VERSION_PRE_RELEASE "-alpha.1" */
-# define OPENSSL_VERSION_PRE_RELEASE "-beta1"
+# define OPENSSL_VERSION_PRE_RELEASE ""
 /* Could be: #define OPENSSL_VERSION_BUILD_METADATA "+fips" */
 /* Could be: #define OPENSSL_VERSION_BUILD_METADATA "+vendor.1" */
 # define OPENSSL_VERSION_BUILD_METADATA ""
@@ -75,20 +75,20 @@ extern "C" {
  * OPENSSL_VERSION_BUILD_METADATA_STR appended.
  */
 # define OPENSSL_VERSION_STR "3.5.0"
-# define OPENSSL_FULL_VERSION_STR "3.5.0-beta1"
+# define OPENSSL_FULL_VERSION_STR "3.5.0"
 
 /*
  * SECTION 3: ADDITIONAL METADATA
  *
  * These strings are defined separately to allow them to be parsable.
  */
-# define OPENSSL_RELEASE_DATE "25 Mar 2025"
+# define OPENSSL_RELEASE_DATE "8 Apr 2025"
 
 /*
  * SECTION 4: BACKWARD COMPATIBILITY
  */
 
-# define OPENSSL_VERSION_TEXT "OpenSSL 3.5.0-beta1 25 Mar 2025"
+# define OPENSSL_VERSION_TEXT "OpenSSL 3.5.0 8 Apr 2025"
 
 /* Synthesize OPENSSL_VERSION_NUMBER with the layout 0xMNN00PPSL */
 # ifdef OPENSSL_VERSION_PRE_RELEASE
