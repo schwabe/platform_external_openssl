@@ -36,6 +36,7 @@ aes_v8_set_encrypt_key:
 	tst	r1,#0x3f
 	bne	.Lenc_key_abort
 
+	adr	r3,.Lrcon
 	cmp	r1,#192
 
 	veor	q0,q0,q0
