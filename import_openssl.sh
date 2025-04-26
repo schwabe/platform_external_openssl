@@ -152,7 +152,7 @@ function default_asm_file () {
 function gen_asm_arm () {
   local OUT
   OUT=$(default_asm_file "$@")
-  CC=${NDK_TOOLCHAIN_PATH}/bin/armv7a-linux-androideabi$NDK_TOOLCHAIN_SDKINT-clang++ $PERL_EXE "$1" void "$OUT" > "$OUT"
+  CC=${NDK_TOOLCHAIN_PATH}/bin/armv7a-linux-androideabi$NDK_TOOLCHAIN_SDKINT-clang++ $PERL_EXE "$1" void -D__ARM_MAX_ARCH__=8 "$OUT" > "$OUT"
 }
 
 # Generate an ARMv8 64-bit assembly file.

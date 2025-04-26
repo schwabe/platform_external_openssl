@@ -1092,6 +1092,7 @@ if (${ANDROID_ABI} STREQUAL "armeabi-v7a")
             -DBSAES_ASM
             -DGHASH_ASM
             -DOPENSSL_BN_ASM_GF2m
+            -D__ARM_MAX_ARCH__=8
             )
 elseif (${ANDROID_ABI} STREQUAL "arm64-v8a")
     target_compile_definitions(crypto PRIVATE
