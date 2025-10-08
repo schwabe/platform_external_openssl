@@ -587,6 +587,9 @@ function import() {
   gen_asm_arm64 crypto/md5/asm/md5-aarch64.pl
   gen_asm_arm64 crypto/sm3/asm/sm3-armv8.pl
   gen_asm_arm64 crypto/sm4/asm/vpsm4_ex-armv8.pl
+	gen_asm_arm64 crypto/aes/asm/aes-sha1-armv8.pl
+	gen_asm_arm64 crypto/aes/asm/aes-sha256-armv8.pl
+	gen_asm_arm64 crypto/aes/asm/aes-sha512-armv8.pl
 
   # Generate x86 asm
   gen_asm_x86 crypto/x86cpuid.pl
@@ -617,53 +620,54 @@ function import() {
   gen_asm_x86 crypto/chacha/asm/chacha-x86.pl
 
   # Generate x86_64 asm
-  gen_asm_x86_64 crypto/x86_64cpuid.pl
-  gen_asm_x86_64 crypto/sha/asm/sha1-x86_64.pl
-  gen_asm_x86_64 crypto/sha/asm/sha1-mb-x86_64.pl
-  gen_asm_x86_64 crypto/sha/asm/sha256-mb-x86_64.pl
+    gen_asm_x86_64 crypto/aes/asm/aes-cfb-avx512.pl
+    gen_asm_x86_64 crypto/aes/asm/aes-x86_64.pl
+    gen_asm_x86_64 crypto/aes/asm/aesni-mb-x86_64.pl
+    gen_asm_x86_64 crypto/aes/asm/aesni-sha1-x86_64.pl
+    gen_asm_x86_64 crypto/aes/asm/aesni-sha256-x86_64.pl
+    gen_asm_x86_64 crypto/aes/asm/aesni-x86_64.pl
+    gen_asm_x86_64 crypto/aes/asm/aesni-x86_64.pl
+    gen_asm_x86_64 crypto/aes/asm/aesni-xts-avx512.pl
+    gen_asm_x86_64 crypto/aes/asm/bsaes-x86_64.pl
+    gen_asm_x86_64 crypto/aes/asm/vpaes-x86_64.pl
+    gen_asm_x86_64 crypto/bn/asm/rsaz-2k-avx512.pl
+    gen_asm_x86_64 crypto/bn/asm/rsaz-2k-avxifma.pl
+    gen_asm_x86_64 crypto/bn/asm/rsaz-3k-avx512.pl
+    gen_asm_x86_64 crypto/bn/asm/rsaz-3k-avxifma.pl
+    gen_asm_x86_64 crypto/bn/asm/rsaz-4k-avx512.pl
+    gen_asm_x86_64 crypto/bn/asm/rsaz-4k-avxifma.pl
+    gen_asm_x86_64 crypto/bn/asm/rsaz-avx2.pl
+    gen_asm_x86_64 crypto/bn/asm/rsaz-x86_64.pl
+    gen_asm_x86_64 crypto/bn/asm/x86_64-gf2m.pl
+    gen_asm_x86_64 crypto/bn/asm/x86_64-mont.pl
+    gen_asm_x86_64 crypto/bn/asm/x86_64-mont.pl
+    gen_asm_x86_64 crypto/bn/asm/x86_64-mont5.pl
+    gen_asm_x86_64 crypto/chacha/asm/chacha-x86_64.pl
+    gen_asm_x86_64 crypto/ec/asm/ecp_nistz256-x86_64.pl
+    gen_asm_x86_64 crypto/ec/asm/x25519-x86_64.pl
+    gen_asm_x86_64 crypto/md5/asm/md5-x86_64.pl
+    gen_asm_x86_64 crypto/modes/asm/aes-gcm-avx512.pl
+    gen_asm_x86_64 crypto/modes/asm/aesni-gcm-x86_64.pl
+    gen_asm_x86_64 crypto/modes/asm/ghash-x86_64.pl
+    gen_asm_x86_64 crypto/poly1305/asm/poly1305-x86_64.pl
+    gen_asm_x86_64 crypto/rc4/asm/rc4-md5-x86_64.pl
+    gen_asm_x86_64 crypto/rc4/asm/rc4-x86_64.pl
+    gen_asm_x86_64 crypto/sha/asm/keccak1600-avx2.pl
+    gen_asm_x86_64 crypto/sha/asm/keccak1600-avx512.pl
+    gen_asm_x86_64 crypto/sha/asm/keccak1600-avx512vl.pl
+    gen_asm_x86_64 crypto/sha/asm/keccak1600-x86_64.pl
+    gen_asm_x86_64 crypto/sha/asm/sha1-mb-x86_64.pl
+    gen_asm_x86_64 crypto/sha/asm/sha1-x86_64.pl
+    gen_asm_x86_64 crypto/sha/asm/sha256-mb-x86_64.pl
+    gen_asm_x86_64 crypto/sha/asm/sha512-x86_64.pl
+    gen_asm_x86_64 crypto/sha/asm/sha512-x86_64.pl crypto/sha/asm/sha256-x86_64.S
+    gen_asm_x86_64 crypto/sm3/asm/sm3-x86_64.pl
+    gen_asm_x86_64 crypto/sm4/asm/sm4-x86_64.pl
+    gen_asm_x86_64 crypto/x86_64cpuid.pl
 
-  gen_asm_x86_64 crypto/sha/asm/sha512-x86_64.pl crypto/sha/asm/sha256-x86_64.S
-  gen_asm_x86_64 crypto/sha/asm/sha512-x86_64.pl
-  gen_asm_x86_64 crypto/modes/asm/ghash-x86_64.pl
-  gen_asm_x86_64 crypto/modes/asm/aesni-gcm-x86_64.pl
+  ls -l util
+  ${PERL_EXE} "-I." "-Iutil/perl" "-Mconfigdata" "-MOpenSSL::paramnames" "util/dofile.pl" "-oMakefile" providers/implementations/include/prov/blake2_params.inc.in > providers/implementations/include/prov/blake2_params.inc
 
-  gen_asm_x86_64 crypto/aes/asm/aes-x86_64.pl
-  gen_asm_x86_64 crypto/aes/asm/aesni-x86_64.pl
-  gen_asm_x86_64 crypto/aes/asm/vpaes-x86_64.pl
-  gen_asm_x86_64 crypto/aes/asm/aesni-sha1-x86_64.pl
-  gen_asm_x86_64 crypto/aes/asm/aesni-mb-x86_64.pl
-  gen_asm_x86_64 crypto/aes/asm/aesni-sha256-x86_64.pl
-  gen_asm_x86_64 crypto/aes/asm/aesni-x86_64.pl
-  gen_asm_x86_64 crypto/aes/asm/bsaes-x86_64.pl
-  gen_asm_x86_64 crypto/modes/asm/aes-gcm-avx512.pl
-  gen_asm_x86_64 crypto/aes/asm/aesni-xts-avx512.pl
-
-  gen_asm_x86_64 crypto/md5/asm/md5-x86_64.pl
-  gen_asm_x86_64 crypto/bn/asm/x86_64-mont.pl
-  gen_asm_x86_64 crypto/bn/asm/x86_64-gf2m.pl
-  gen_asm_x86_64 crypto/bn/asm/x86_64-mont5.pl
-  gen_asm_x86_64 crypto/bn/asm/rsaz-x86_64.pl
-  gen_asm_x86_64 crypto/bn/asm/rsaz-avx2.pl
-  gen_asm_x86_64 crypto/ec/asm/ecp_nistz256-x86_64.pl
-  gen_asm_x86_64 crypto/rc4/asm/rc4-x86_64.pl
-  gen_asm_x86_64 crypto/rc4/asm/rc4-md5-x86_64.pl
-  gen_asm_x86_64 crypto/poly1305/asm/poly1305-x86_64.pl
-  gen_asm_x86_64 crypto/bn/asm/x86_64-mont.pl
-
-  gen_asm_x86_64 crypto/sha/asm/keccak1600-avx2.pl
-  gen_asm_x86_64 crypto/sha/asm/keccak1600-avx512.pl
-  gen_asm_x86_64 crypto/sha/asm/keccak1600-avx512vl.pl
-  gen_asm_x86_64 crypto/sha/asm/keccak1600-x86_64.pl
-
-  gen_asm_x86_64 crypto/ec/asm/x25519-x86_64.pl
-  gen_asm_x86_64 crypto/bn/asm/rsaz-2k-avx512.pl
-  gen_asm_x86_64 crypto/bn/asm/rsaz-3k-avx512.pl
-  gen_asm_x86_64 crypto/bn/asm/rsaz-4k-avx512.pl
-  gen_asm_x86_64 crypto/bn/asm/rsaz-2k-avxifma.pl
-  gen_asm_x86_64 crypto/bn/asm/rsaz-3k-avxifma.pl
-  gen_asm_x86_64 crypto/bn/asm/rsaz-4k-avxifma.pl
-
-  gen_asm_x86_64 crypto/chacha/asm/chacha-x86_64.pl
 
   cd ..
 

@@ -209,18 +209,6 @@ static int dh_import(void *keydata, int selection, const OSSL_PARAM params[])
             selection & OSSL_KEYMGMT_SELECT_PRIVATE_KEY ? 1 : 0;
 
         ok = ok && ossl_dh_key_fromdata(dh, params, include_private);
-#ifdef FIPS_MODULE
-        /*
-         * FIPS 140-3 IG 10.3.A additional comment 1 mandates that a pairwise
-         * consistency check be undertaken on key import.  The required test
-         * is described in SP 800-56Ar3 5.6.2.1.4.
-         */
-        if (ok > 0 && !ossl_fips_self_testing()) {
-            ok = ossl_dh_check_pairwise(dh, 1);
-            if (ok <= 0)
-                ossl_set_error_state(OSSL_SELF_TEST_TYPE_PCT);
-        }
-#endif  /* FIPS_MODULE */
     }
 
     return ok;
@@ -348,6 +336,9 @@ static ossl_inline int dh_get_params(void *key, OSSL_PARAM params[])
         if (p->return_size == 0)
             return 0;
     }
+    if ((p = OSSL_PARAM_locate(params, OSSL_PKEY_PARAM_SECURITY_CATEGORY)) != NULL)
+        if (!OSSL_PARAM_set_int(p, 0))
+            return 0;
 
     return ossl_dh_params_todata(dh, NULL, params)
         && ossl_dh_key_todata(dh, NULL, params, 1);
@@ -357,6 +348,7 @@ static const OSSL_PARAM dh_params[] = {
     OSSL_PARAM_int(OSSL_PKEY_PARAM_BITS, NULL),
     OSSL_PARAM_int(OSSL_PKEY_PARAM_SECURITY_BITS, NULL),
     OSSL_PARAM_int(OSSL_PKEY_PARAM_MAX_SIZE, NULL),
+    OSSL_PARAM_int(OSSL_PKEY_PARAM_SECURITY_CATEGORY, NULL),
     OSSL_PARAM_octet_string(OSSL_PKEY_PARAM_ENCODED_PUBLIC_KEY, NULL, 0),
     DH_IMEXPORTABLE_PARAMETERS,
     DH_IMEXPORTABLE_PUBLIC_KEY,
@@ -744,7 +736,7 @@ static void *dh_gen(void *genctx, OSSL_CALLBACK *osslcb, void *cbarg)
             && gctx->ffc_params == NULL) {
         /* Select a named group if there is not one already */
         if (gctx->group_nid == NID_undef)
-            gctx->group_nid = ossl_dh_get_named_group_uid_from_size(gctx->pbits);
+            gctx->group_nid = ossl_dh_get_named_group_uid_from_size((int)gctx->pbits);
         if (gctx->group_nid == NID_undef)
             return NULL;
         dh = ossl_dh_new_by_nid_ex(gctx->libctx, gctx->group_nid);
@@ -786,12 +778,12 @@ static void *dh_gen(void *genctx, OSSL_CALLBACK *osslcb, void *cbarg)
              * group based on pbits.
              */
             if (gctx->gen_type == DH_PARAMGEN_TYPE_GENERATOR)
-                ret = DH_generate_parameters_ex(dh, gctx->pbits,
+                ret = DH_generate_parameters_ex(dh, (int)gctx->pbits,
                                                 gctx->generator, gencb);
             else
                 ret = ossl_dh_generate_ffc_parameters(dh, gctx->gen_type,
-                                                      gctx->pbits, gctx->qbits,
-                                                      gencb);
+                                                      (int)gctx->pbits,
+                                                      (int)gctx->qbits, gencb);
             if (ret <= 0)
                 goto end;
         }
@@ -806,6 +798,15 @@ static void *dh_gen(void *genctx, OSSL_CALLBACK *osslcb, void *cbarg)
                                      gctx->gen_type == DH_PARAMGEN_TYPE_FIPS_186_2);
         if (DH_generate_key(dh) <= 0)
             goto end;
+#ifdef FIPS_MODULE
+        if (!ossl_fips_self_testing()) {
+            ret = ossl_dh_check_pairwise(dh, 0);
+            if (ret <= 0) {
+                ossl_set_error_state(OSSL_SELF_TEST_TYPE_PCT);
+                goto end;
+            }
+        }
+#endif /* FIPS_MODULE */
     }
     DH_clear_flags(dh, DH_FLAG_TYPE_MASK);
     DH_set_flags(dh, gctx->dh_type);

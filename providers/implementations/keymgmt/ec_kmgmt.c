@@ -431,21 +431,6 @@ int common_import(void *keydata, int selection, const OSSL_PARAM params[],
     if ((selection & OSSL_KEYMGMT_SELECT_OTHER_PARAMETERS) != 0)
         ok = ok && ossl_ec_key_otherparams_fromdata(ec, params);
 
-#ifdef FIPS_MODULE
-    if (ok > 0
-            && !ossl_fips_self_testing()
-            && EC_KEY_get0_public_key(ec) != NULL
-            && EC_KEY_get0_private_key(ec) != NULL
-            && EC_KEY_get0_group(ec) != NULL) {
-        BN_CTX *bnctx = BN_CTX_new_ex(ossl_ec_key_get_libctx(ec));
-
-        ok = bnctx != NULL && ossl_ec_key_pairwise_check(ec, bnctx);
-        BN_CTX_free(bnctx);
-        if (ok <= 0)
-            ossl_set_error_state(OSSL_SELF_TEST_TYPE_PCT);
-    }
-#endif  /* FIPS_MODULE */
-
     return ok;
 }
 
@@ -721,6 +706,9 @@ int common_get_params(void *key, OSSL_PARAM params[], int sm2)
         if (!OSSL_PARAM_set_int(p, sec_bits))
             goto err;
     }
+    if ((p = OSSL_PARAM_locate(params, OSSL_PKEY_PARAM_SECURITY_CATEGORY)) != NULL)
+        if (!OSSL_PARAM_set_int(p, 0))
+            goto err;
 
     if ((p = OSSL_PARAM_locate(params,
                                OSSL_PKEY_PARAM_EC_DECODED_FROM_EXPLICIT_PARAMS))
@@ -805,6 +793,7 @@ static const OSSL_PARAM ec_known_gettable_params[] = {
     OSSL_PARAM_int(OSSL_PKEY_PARAM_BITS, NULL),
     OSSL_PARAM_int(OSSL_PKEY_PARAM_SECURITY_BITS, NULL),
     OSSL_PARAM_int(OSSL_PKEY_PARAM_MAX_SIZE, NULL),
+    OSSL_PARAM_int(OSSL_PKEY_PARAM_SECURITY_CATEGORY, NULL),
     OSSL_PARAM_utf8_string(OSSL_PKEY_PARAM_DEFAULT_DIGEST, NULL, 0),
     OSSL_PARAM_octet_string(OSSL_PKEY_PARAM_ENCODED_PUBLIC_KEY, NULL, 0),
     OSSL_PARAM_int(OSSL_PKEY_PARAM_EC_DECODED_FROM_EXPLICIT_PARAMS, NULL),
@@ -1347,6 +1336,21 @@ static void *ec_gen(void *genctx, OSSL_CALLBACK *osslcb, void *cbarg)
     if (gctx->group_check != NULL)
         ret = ret && ossl_ec_set_check_group_type_from_name(ec,
                                                             gctx->group_check);
+#ifdef FIPS_MODULE
+    if (ret > 0
+            && !ossl_fips_self_testing()
+            && EC_KEY_get0_public_key(ec) != NULL
+            && EC_KEY_get0_private_key(ec) != NULL
+            && EC_KEY_get0_group(ec) != NULL) {
+        BN_CTX *bnctx = BN_CTX_new_ex(ossl_ec_key_get_libctx(ec));
+
+        ret = bnctx != NULL && ossl_ec_key_pairwise_check(ec, bnctx);
+        BN_CTX_free(bnctx);
+        if (ret <= 0)
+            ossl_set_error_state(OSSL_SELF_TEST_TYPE_PCT);
+    }
+#endif  /* FIPS_MODULE */
+
     if (ret)
         return ec;
 err:

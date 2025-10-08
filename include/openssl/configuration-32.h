@@ -27,7 +27,7 @@ extern "C" {
  * OpenSSL was configured with the following options:
  */
 
-# define OPENSSL_CONFIGURED_API 30500
+# define OPENSSL_CONFIGURED_API 30600
 # ifndef OPENSSL_RAND_SEED_OS
 #  define OPENSSL_RAND_SEED_OS
 # endif
@@ -39,6 +39,9 @@ extern "C" {
 # endif
 # ifndef OPENSSL_NO_AFALGENG
 #  define OPENSSL_NO_AFALGENG
+# endif
+# ifndef OPENSSL_NO_ALLOCFAIL_TESTS
+#  define OPENSSL_NO_ALLOCFAIL_TESTS
 # endif
 # ifndef OPENSSL_NO_ASAN
 #  define OPENSSL_NO_ASAN
@@ -120,6 +123,9 @@ extern "C" {
 # endif
 # ifndef OPENSSL_NO_KTLS
 #  define OPENSSL_NO_KTLS
+# endif
+# ifndef OPENSSL_NO_LMS
+#  define OPENSSL_NO_LMS
 # endif
 # ifndef OPENSSL_NO_MD2
 #  define OPENSSL_NO_MD2

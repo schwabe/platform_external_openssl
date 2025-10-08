@@ -9,6 +9,7 @@ set(crypto_srcs
         crypto/aes/aes_ofb.c
         crypto/aes/aes_wrap.c
         crypto/aria/aria.c
+        crypto/array_alloc.c
         crypto/asn1_dsa.c
         crypto/asn1/a_bitstr.c
         crypto/asn1/a_d2i_fp.c
@@ -155,6 +156,8 @@ set(crypto_srcs
         crypto/cms/cms_err.c
         crypto/cms/cms_ess.c
         crypto/cms/cms_io.c
+        crypto/cms/cms_kem.c
+        crypto/cms/cms_kemri.c
         crypto/cms/cms_kari.c
         crypto/cms/cms_lib.c
         crypto/cms/cms_pwri.c
@@ -375,6 +378,7 @@ set(crypto_srcs
         crypto/evp/evp_lib.c
         crypto/evp/evp_pbe.c
         crypto/evp/evp_pkey.c
+        crypto/evp/evp_pkey_type.c
         crypto/evp/evp_rand.c
         crypto/evp/evp_utils.c
         crypto/evp/exchange.c
@@ -486,7 +490,6 @@ set(crypto_srcs
         crypto/param_build.c
         crypto/param_build_set.c
         crypto/params_from_text.c
-        crypto/params_idx.c
         crypto/passphrase.c
         crypto/pem/pem_all.c
         crypto/pem/pem_err.c
@@ -613,6 +616,7 @@ set(crypto_srcs
         crypto/store/store_meth.c
         crypto/store/store_strings.c
         crypto/stack/stack.c
+        crypto/threads_common.c
         crypto/threads_none.c
         crypto/threads_pthread.c
         crypto/threads_win.c
@@ -768,6 +772,9 @@ elseif (${ANDROID_ABI} STREQUAL "arm64-v8a")
             crypto/sm4/asm/sm4-armv8.S
             crypto/sm4/asm/vpsm4-armv8.S
             crypto/sm4/asm/vpsm4_ex-armv8.S
+            crypto/aes/asm/aes-sha1-armv8.S
+            crypto/aes/asm/aes-sha256-armv8.S
+            crypto/aes/asm/aes-sha512-armv8.S
             )
 elseif (${ANDROID_ABI} STREQUAL "x86")
     set(crypto_srcs ${crypto_srcs}
@@ -840,6 +847,9 @@ elseif (${ANDROID_ABI} STREQUAL "x86_64")
             crypto/bn/asm/rsaz-2k-avxifma.S
             crypto/bn/asm/rsaz-4k-avxifma.S
             crypto/bn/asm/rsaz-3k-avxifma.S
+            crypto/aes/asm/aes-cfb-avx512.S
+            crypto/sm4/asm/sm4-x86_64.S
+            crypto/sm3/asm/sm3-x86_64.S
             )
     list(REMOVE_ITEM crypto_srcs
             crypto/aes/aes_cbc.c
@@ -880,6 +890,7 @@ set(provider_srcs
         providers/common/securitycheck.c
         providers/common/securitycheck_default.c
         providers/defltprov.c
+        providers/common/der/der_hkdf_gen.c
         providers/common/der/der_slh_dsa_gen.c
         providers/common/der/der_ml_dsa_gen.c
         providers/implementations/asymciphers/rsa_enc.c
@@ -887,9 +898,14 @@ set(provider_srcs
         providers/implementations/ciphers/cipher_aes.c
         providers/implementations/ciphers/cipher_aes_cbc_hmac_sha.c
         providers/implementations/ciphers/cipher_aes_cbc_hmac_sha1_hw.c
+        providers/implementations/ciphers/cipher_aes_cbc_hmac_sha_etm.c
+        providers/implementations/ciphers/cipher_aes_cbc_hmac_sha1_etm_hw.c
+        providers/implementations/ciphers/cipher_aes_cbc_hmac_sha256_etm_hw.c
         providers/implementations/ciphers/cipher_aes_cbc_hmac_sha256_hw.c
+        providers/implementations/ciphers/cipher_aes_cbc_hmac_sha512_etm_hw.c
         providers/implementations/ciphers/cipher_aes_ccm.c
         providers/implementations/ciphers/cipher_aes_ccm_hw.c
+        providers/implementations/ciphers/cipher_aes_cfb_hw.c
         providers/implementations/ciphers/cipher_aes_gcm.c
         providers/implementations/ciphers/cipher_aes_gcm_hw.c
         providers/implementations/ciphers/cipher_aes_gcm_siv.c
@@ -983,7 +999,6 @@ set(provider_srcs
         providers/implementations/kdfs/kbkdf.c
         providers/implementations/kdfs/krb5kdf.c
         providers/implementations/kdfs/pbkdf2.c
-        providers/implementations/kdfs/pbkdf2_fips.c
         providers/implementations/kdfs/pkcs12kdf.c
         providers/implementations/kdfs/pvkkdf.c
         providers/implementations/kdfs/scrypt.c
@@ -1130,6 +1145,8 @@ elseif (${ANDROID_ABI} STREQUAL "x86_64")
             -DPOLY1305_ASM
             -DVPAES_ASM
             -DX25519_ASM
+            -DOPENSSL_SM3_ASM
+            -DSM4_ASM
             )
 else ()
     message(FATAL_ERROR "Unknown arch ${ANDROID_ABI} for flags")

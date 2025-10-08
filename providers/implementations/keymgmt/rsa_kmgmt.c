@@ -197,23 +197,6 @@ static int rsa_import(void *keydata, int selection, const OSSL_PARAM params[])
         ok = ok && ossl_rsa_fromdata(rsa, params, include_private);
     }
 
-#ifdef FIPS_MODULE
-    if (ok > 0 && !ossl_fips_self_testing()) {
-        const BIGNUM *n, *e, *d, *dp, *dq, *iq, *p, *q;
-
-        RSA_get0_key(rsa, &n, &e, &d);
-        RSA_get0_crt_params(rsa, &dp, &dq, &iq);
-        p = RSA_get0_p(rsa);
-        q = RSA_get0_q(rsa);
-
-        /* Check for the public key */
-        if (n != NULL && e != NULL)
-            /* Check for private key in straightforward or CRT form */
-            if (d != NULL || (p != NULL && q != NULL && dp != NULL
-                              && dq != NULL && iq != NULL))
-                ok = ossl_rsa_key_pairwise_test(rsa);
-    }
-#endif  /* FIPS_MODULE */
     return ok;
 }
 
@@ -361,6 +344,9 @@ static int rsa_get_params(void *key, OSSL_PARAM params[])
     if ((p = OSSL_PARAM_locate(params, OSSL_PKEY_PARAM_MAX_SIZE)) != NULL
         && (empty || !OSSL_PARAM_set_int(p, RSA_size(rsa))))
         return 0;
+    if ((p = OSSL_PARAM_locate(params, OSSL_PKEY_PARAM_SECURITY_CATEGORY)) != NULL)
+        if (!OSSL_PARAM_set_int(p, 0))
+            return 0;
 
     /*
      * For restricted RSA-PSS keys, we ignore the default digest request.
@@ -396,6 +382,7 @@ static const OSSL_PARAM rsa_params[] = {
     OSSL_PARAM_int(OSSL_PKEY_PARAM_BITS, NULL),
     OSSL_PARAM_int(OSSL_PKEY_PARAM_SECURITY_BITS, NULL),
     OSSL_PARAM_int(OSSL_PKEY_PARAM_MAX_SIZE, NULL),
+    OSSL_PARAM_int(OSSL_PKEY_PARAM_SECURITY_CATEGORY, NULL),
     OSSL_PARAM_utf8_string(OSSL_PKEY_PARAM_DEFAULT_DIGEST, NULL, 0),
     RSA_KEY_TYPES()
     OSSL_PARAM_END

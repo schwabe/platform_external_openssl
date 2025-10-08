@@ -18,6 +18,7 @@
 #include <openssl/rand.h>
 #include "internal/e_os.h"
 #include "internal/fips.h"
+#include "internal/threads_common.h"
 #include "internal/tsan_assist.h"
 #include "prov/providercommon.h"
 #include "crypto/rand.h"
@@ -173,6 +174,7 @@ DEP_INIT_ATTRIBUTE void init(void)
 DEP_FINI_ATTRIBUTE void cleanup(void)
 {
     CRYPTO_THREAD_lock_free(self_test_lock);
+    CRYPTO_THREAD_clean_local_for_fips();
 }
 #endif
 
@@ -424,9 +426,18 @@ void SELF_TEST_disable_conditional_error_state(void)
 
 void ossl_set_error_state(const char *type)
 {
-    int cond_test = (type != NULL && strcmp(type, OSSL_SELF_TEST_TYPE_PCT) == 0);
+    int cond_test = 0;
+    int import_pct = 0;
 
-    if (!cond_test || (FIPS_conditional_error_check == 1)) {
+    if (type != NULL) {
+        cond_test = strcmp(type, OSSL_SELF_TEST_TYPE_PCT) == 0;
+        import_pct = strcmp(type, OSSL_SELF_TEST_TYPE_PCT_IMPORT) == 0;
+    }
+
+    if (import_pct) {
+        /* Failure to import is transient to avoid a DoS attack */
+        ERR_raise(ERR_LIB_PROV, PROV_R_FIPS_MODULE_IMPORT_PCT_ERROR);
+    } else if (!cond_test || (FIPS_conditional_error_check == 1)) {
         set_fips_state(FIPS_STATE_ERROR);
         ERR_raise(ERR_LIB_PROV, PROV_R_FIPS_MODULE_ENTERING_ERROR_STATE);
     } else {
