@@ -279,7 +279,7 @@ function generate_build_config_headers() {
   fi
 
   # Search for *.in files to transform them to *.h/*.c files
-  local list_existing_in_files=$(find crypto include providers -name '*.in' | awk '{gsub(/\.in/, ""); print}' | sort -u)
+  local list_existing_in_files=$(find crypto include providers -name '*.in' | awk '{gsub(/\.in$/, ""); print}' | sort -u)
   echo -e "Found *.in files are:\n$list_existing_in_files\n"
   for input_in_files in ${list_existing_in_files[@]}; do make $input_in_files || true; done
 
@@ -587,9 +587,9 @@ function import() {
   gen_asm_arm64 crypto/md5/asm/md5-aarch64.pl
   gen_asm_arm64 crypto/sm3/asm/sm3-armv8.pl
   gen_asm_arm64 crypto/sm4/asm/vpsm4_ex-armv8.pl
-	gen_asm_arm64 crypto/aes/asm/aes-sha1-armv8.pl
-	gen_asm_arm64 crypto/aes/asm/aes-sha256-armv8.pl
-	gen_asm_arm64 crypto/aes/asm/aes-sha512-armv8.pl
+  gen_asm_arm64 crypto/aes/asm/aes-sha1-armv8.pl
+  gen_asm_arm64 crypto/aes/asm/aes-sha256-armv8.pl
+  gen_asm_arm64 crypto/aes/asm/aes-sha512-armv8.pl
 
   # Generate x86 asm
   gen_asm_x86 crypto/x86cpuid.pl
@@ -664,10 +664,6 @@ function import() {
     gen_asm_x86_64 crypto/sm3/asm/sm3-x86_64.pl
     gen_asm_x86_64 crypto/sm4/asm/sm4-x86_64.pl
     gen_asm_x86_64 crypto/x86_64cpuid.pl
-
-  ls -l util
-  ${PERL_EXE} "-I." "-Iutil/perl" "-Mconfigdata" "-MOpenSSL::paramnames" "util/dofile.pl" "-oMakefile" providers/implementations/include/prov/blake2_params.inc.in > providers/implementations/include/prov/blake2_params.inc
-
 
   cd ..
 
