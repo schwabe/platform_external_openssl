@@ -1,5 +1,5 @@
 /*
- * Copyright 1995-2025 The OpenSSL Project Authors. All Rights Reserved.
+ * Copyright 1995-2026 The OpenSSL Project Authors. All Rights Reserved.
  *
  * Licensed under the Apache License 2.0 (the "License").  You may not use
  * this file except in compliance with the License.  You can obtain a copy
@@ -57,12 +57,18 @@ static const BIO_METHOD methods_filep = {
 BIO *BIO_new_file(const char *filename, const char *mode)
 {
     BIO *ret;
-    FILE *file = openssl_fopen(filename, mode);
+    FILE *file;
     int fp_flags = BIO_CLOSE;
 
     if (strchr(mode, 'b') == NULL)
         fp_flags |= BIO_FP_TEXT;
 
+    if (filename == NULL) {
+        ERR_raise(ERR_LIB_CRYPTO, ERR_R_PASSED_NULL_PARAMETER);
+        return NULL;
+    }
+
+    file = openssl_fopen(filename, mode);
     if (file == NULL) {
         ERR_raise_data(ERR_LIB_SYS, get_last_sys_error(),
             "calling fopen(%s, %s)",
@@ -137,7 +143,7 @@ static int file_read(BIO *b, char *out, int outl)
 {
     int ret = 0;
 
-    if (b->init && (out != NULL)) {
+    if (b->init != 0 && out != NULL && outl > 0) {
         if (b->flags & BIO_FLAGS_UPLINK_INTERNAL)
             ret = (int)UP_fread(out, 1, outl, b->ptr);
         else
@@ -193,17 +199,44 @@ static long file_ctrl(BIO *b, int cmd, long num, void *ptr)
             ret = (long)fseek(fp, num, 0);
         break;
     case BIO_CTRL_EOF:
+        /*
+         * NOTE feof returns 0 if we're not in an eof condition
+         * and a non-zero value if we are (i.e. any non-zero value
+         * so we map the 0:non-0 return value here to 0:1 with a
+         * double negation
+         */
         if (b->flags & BIO_FLAGS_UPLINK_INTERNAL)
-            ret = (long)UP_feof(fp);
+            ret = !!(long)UP_feof(fp);
         else
-            ret = (long)feof(fp);
+            ret = !!(long)feof(fp);
+#if defined(OPENSSL_SYS_WINDOWS)
+        /*
+         * Windows gives us an extra issue to contend with.
+         * In windows feof may return 0 if it is passed an invalid
+         * stream.  In this event, feof sets errno to EINVAL.
+         * Check for that here, and set ret to -EINVAL if its the case.
+         */
+        if (ret == 0 && errno == EINVAL)
+            ret = -EINVAL;
+#endif
         break;
     case BIO_C_FILE_TELL:
     case BIO_CTRL_INFO:
         if (b->flags & BIO_FLAGS_UPLINK_INTERNAL)
             ret = UP_ftell(b->ptr);
-        else
+        else {
+#if defined(OPENSSL_SYS_WINDOWS)
+            /*
+             * On Windows, for non-seekable files (stdin), ftell() is undefined.
+             */
+            if (GetFileType((HANDLE)_get_osfhandle(_fileno(fp))) != FILE_TYPE_DISK)
+                ret = -1;
+            else
+                ret = ftell(fp);
+#else
             ret = ftell(fp);
+#endif
+        }
         break;
     case BIO_C_SET_FILE_PTR:
         file_free(b);
@@ -283,6 +316,11 @@ static long file_ctrl(BIO *b, int cmd, long num, void *ptr)
         if (!(num & BIO_FP_TEXT))
             OPENSSL_strlcat(p, "b", sizeof(p));
 #endif
+        if (ptr == NULL) {
+            ERR_raise(ERR_LIB_CRYPTO, ERR_R_PASSED_NULL_PARAMETER);
+            ret = 0;
+            break;
+        }
         fp = openssl_fopen(ptr, p);
         if (fp == NULL) {
             ERR_raise_data(ERR_LIB_SYS, get_last_sys_error(),

@@ -12,6 +12,8 @@
 .globl	poly1305_emit
 .hidden	poly1305_emit
 
+
+
 .type	poly1305_init,%function
 .align	5
 poly1305_init:
@@ -51,6 +53,13 @@ poly1305_init:
 
 	csel	x12,x12,x7,eq
 	csel	x13,x13,x8,eq
+
+	tst	w17, #ARMV9_SVE2_POLY1305
+
+	adrp	x7,poly1305_blocks_sve2
+	add	x7,x7,#:lo12:poly1305_blocks_sve2
+
+	csel	x12,x12,x7,eq
 
 #ifdef	__ILP32__
 	stp	w12,w13,[x2]

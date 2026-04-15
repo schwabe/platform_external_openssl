@@ -42,7 +42,7 @@ ChaCha20_ctr32_sve:
 	mov	x7,0
 	adrp	x6,OPENSSL_armcap_P
 	ldr	w6,[x6,#:lo12:OPENSSL_armcap_P]
-	tst	w6,#ARMV8_SVE2
+	tst	w6,#ARMV9_SVE2
 	b.eq	1f
 	mov	x7,1
 	b	2f

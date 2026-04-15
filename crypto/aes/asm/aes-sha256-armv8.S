@@ -76,6 +76,7 @@
 .globl	asm_aescbc_sha256_hmac
 .type	asm_aescbc_sha256_hmac,%function
 
+.section	.rodata
 .align	4
 .Lrcon:
 .word	0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5
@@ -98,6 +99,7 @@
 .Linit_sha_state:
 .word	0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a
 .word	0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19
+.text
 
 asm_aescbc_sha256_hmac:
 	AARCH64_VALID_CALL_TARGET
@@ -113,7 +115,8 @@ asm_aescbc_sha256_hmac:
 	stp	d10,d11,[sp,#16]
 
 
-	adr	x12,.Linit_sha_state
+	adrp	x12,.Linit_sha_state
+	add	x12,x12,#:lo12:.Linit_sha_state
 	prfm	PLDL1KEEP,[x1,0]
 	lsr	x10,x2,4
 
@@ -156,7 +159,8 @@ asm_aescbc_sha256_hmac:
 	aesmc	v0.16b,v0.16b
 	prfm	PLDL1KEEP,[x1,64]
 
-	adr	x8,.Lrcon
+	adrp	x8,.Lrcon
+	add	x8,x8,#:lo12:.Lrcon
 	ld1	{v12.16b},[x9],16
 	aese	v0.16b,v10.16b
 	aesmc	v0.16b,v0.16b
@@ -397,7 +401,8 @@ asm_aescbc_sha256_hmac:
 	*/
 .Lenc_main_loop:
 
-	adr	x8,.Lrcon
+	adrp	x8,.Lrcon
+	add	x8,x8,#:lo12:.Lrcon
 	/*
 	*	Because both mov, rev32 and eor have a busy cycle,this takes longer
 	*	than it looks. That's OK since there are 6 cycles before we can use
@@ -766,7 +771,8 @@ asm_aescbc_sha256_hmac:
 	*/
 	ld1	{v0.16b},[x0],16
 
-	adr	x8,.Lrcon
+	adrp	x8,.Lrcon
+	add	x8,x8,#:lo12:.Lrcon
 	ld1	{v4.16b},[x8],16
 	ld1	{v5.16b},[x8],16
 	ld1	{v6.16b},[x8],16
@@ -1034,7 +1040,8 @@ asm_aescbc_sha256_hmac:
 
 .Lbm2fromQ0:
 
-	adr	x8,.Lrcon
+	adrp	x8,.Lrcon
+	add	x8,x8,#:lo12:.Lrcon
 
 	ld1	{v4.16b},[x8],16
 	ld1	{v5.16b},[x8],16
@@ -1305,7 +1312,8 @@ asm_aescbc_sha256_hmac:
 	*/
 1:
 
-	adr	x8,.Lrcon
+	adrp	x8,.Lrcon
+	add	x8,x8,#:lo12:.Lrcon
 
 	ld1	{v4.16b},[x8],16
 	ld1	{v5.16b},[x8],16
@@ -1464,7 +1472,8 @@ asm_aescbc_sha256_hmac:
 	*	do last sha of pad block
 	*/
 
-	adr	x8,.Lrcon
+	adrp	x8,.Lrcon
+	add	x8,x8,#:lo12:.Lrcon
 
 
 	ld1	{v4.16b},[x8],16
@@ -1601,7 +1610,8 @@ asm_aescbc_sha256_hmac:
 	eor	v28.16b, v28.16b, v28.16b
 	eor	v29.16b, v29.16b, v29.16b
 
-	adr	x8,.Lrcon
+	adrp	x8,.Lrcon
+	add	x8,x8,#:lo12:.Lrcon
 
 	ldp	q24,q25,[x7]
 
@@ -1782,7 +1792,8 @@ asm_aescbc_sha256_hmac:
 	*	already in place excepting the final word.
 	*/
 .Lenc_short_loop:
-	adr	x8,.Lrcon
+	adrp	x8,.Lrcon
+	add	x8,x8,#:lo12:.Lrcon
 
 	ld1	{v0.16b},[x0],16
 	eor	v0.16b,v0.16b,v3.16b
@@ -2265,7 +2276,8 @@ asm_aescbc_sha256_hmac:
 	*/
 1:
 
-	adr	x8,.Lrcon
+	adrp	x8,.Lrcon
+	add	x8,x8,#:lo12:.Lrcon
 
 	ld1	{v4.16b},[x8],16
 	ld1	{v5.16b},[x8],16
@@ -2426,7 +2438,8 @@ asm_aescbc_sha256_hmac:
 
 
 
-	adr	x8,.Lrcon
+	adrp	x8,.Lrcon
+	add	x8,x8,#:lo12:.Lrcon
 
 
 	ld1	{v4.16b},[x8],16
@@ -2563,7 +2576,8 @@ asm_aescbc_sha256_hmac:
 	eor	v28.16b, v28.16b, v28.16b
 	eor	v29.16b, v29.16b, v29.16b
 
-	adr	x8,.Lrcon
+	adrp	x8,.Lrcon
+	add	x8,x8,#:lo12:.Lrcon
 
 	ldp	q24,q25,[x7]
 
@@ -2808,7 +2822,8 @@ asm_sha256_hmac_aescbc_dec:
 	lsr	x10,x2,4
 	stp	d14,d15,[sp,#48]
 
-	adr	x12,.Linit_sha_state
+	adrp	x12,.Linit_sha_state
+	add	x12,x12,#:lo12:.Linit_sha_state
 	stp	x19,x20,[sp,#64]
 
 	ldr	x9, [x6, #CIPHER_KEY]
@@ -2844,7 +2859,8 @@ asm_sha256_hmac_aescbc_dec:
 	prfm	PLDL1KEEP,[x0,64]
 	prfm	PLDL1KEEP,[x1,64]
 
-	adr	x8,.Lrcon
+	adrp	x8,.Lrcon
+	add	x8,x8,#:lo12:.Lrcon
 	/*
 	*	do the first sha256 block on the plaintext
 	*/
@@ -3027,7 +3043,8 @@ asm_sha256_hmac_aescbc_dec:
 	prfm	PLDL1KEEP,[x1,64]
 	mov	v23.16b,v25.16b
 
-	adr	x8,.Lrcon
+	adrp	x8,.Lrcon
+	add	x8,x8,#:lo12:.Lrcon
 
 	/*
 	*	aes xform 0, sha quad 0
@@ -3405,7 +3422,8 @@ asm_sha256_hmac_aescbc_dec:
 	prfm	PLDL1KEEP,[x1,64]
 	mov	v23.16b,v25.16b
 
-	adr	x8,.Lrcon
+	adrp	x8,.Lrcon
+	add	x8,x8,#:lo12:.Lrcon
 	ld1	{v4.16b},[x8],16
 	ld1	{v5.16b},[x8],16
 
@@ -4016,7 +4034,8 @@ asm_sha256_hmac_aescbc_dec:
 	*/
 .Ljoin_common:
 
-	adr	x8,.Lrcon
+	adrp	x8,.Lrcon
+	add	x8,x8,#:lo12:.Lrcon
 	mov	w15,0x80
 .Lpost_loop_Q0:
 
@@ -4281,7 +4300,8 @@ asm_sha256_hmac_aescbc_dec:
 
 	ld1	{v0.16b},[x0]
 	ld1	{v31.16b},[x0],16
-	adr	x8,.Lrcon
+	adrp	x8,.Lrcon
+	add	x8,x8,#:lo12:.Lrcon
 	ld1	{v4.16b},[x8],16
 	aesd	v0.16b,v8.16b
 	aesimc	v0.16b,v0.16b
@@ -4555,7 +4575,8 @@ asm_sha256_hmac_aescbc_dec:
 
 .Lzero_aes_blocks_left:
 
-	adr	x8,.Lrcon
+	adrp	x8,.Lrcon
+	add	x8,x8,#:lo12:.Lrcon
 	ld1	{v4.16b},[x8],16
 	ld1	{v5.16b},[x8],16
 
@@ -4701,7 +4722,8 @@ asm_sha256_hmac_aescbc_dec:
 	*	Calculate final HMAC
 	*/
 
-	adr	x8,.Lrcon
+	adrp	x8,.Lrcon
+	add	x8,x8,#:lo12:.Lrcon
 
 	ld1	{v24.16b},[x7],16
 	ld1	{v25.16b},[x7]
@@ -4874,7 +4896,8 @@ asm_sha256_hmac_aescbc_dec:
 	*/
 .Ldec_short_cases:
 	ldp	q8,q9,[x9],32
-	adr	x8,.Lrcon
+	adrp	x8,.Lrcon
+	add	x8,x8,#:lo12:.Lrcon
 	ldp	q10,q11,[x9],32
 	lsl	x11,x10,4
 

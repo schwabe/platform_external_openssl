@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The OpenSSL Project Authors. All Rights Reserved.
+ * Copyright 2024-2026 The OpenSSL Project Authors. All Rights Reserved.
  *
  * Licensed under the Apache License 2.0 (the "License").  You may not use
  * this file except in compliance with the License.  You can obtain a copy
@@ -13,7 +13,7 @@
 #include <crypto/asn1.h>
 #include "ext_dat.h"
 
-static const char *WEEKDAY_NAMES[7] = {
+static const char *const WEEKDAY_NAMES[7] = {
     "SUN",
     "MON",
     "TUE",
@@ -23,7 +23,7 @@ static const char *WEEKDAY_NAMES[7] = {
     "SAT"
 };
 
-static const char *WEEK_NAMES[5] = {
+static const char *const WEEK_NAMES[5] = {
     "first",
     "second",
     "third",
@@ -31,7 +31,7 @@ static const char *WEEK_NAMES[5] = {
     "final"
 };
 
-static const char *MONTH_NAMES[12] = {
+static const char *const MONTH_NAMES[12] = {
     "JAN",
     "FEB",
     "MAR",
@@ -167,7 +167,7 @@ static int i2r_OSSL_DAY_TIME(X509V3_EXT_METHOD *method,
         return 0;
     if (dt->minute && !ASN1_INTEGER_get_int64(&m, dt->minute))
         return 0;
-    if (dt->minute && !ASN1_INTEGER_get_int64(&s, dt->second))
+    if (dt->second && !ASN1_INTEGER_get_int64(&s, dt->second))
         return 0;
     return BIO_printf(out, "%02lld:%02lld:%02lld",
                (long long int)h, (long long int)m, (long long int)s)

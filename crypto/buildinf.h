@@ -11,7 +11,7 @@
  */
 
 #define PLATFORM "platform: linux-armv4"
-#define DATE "built on: Wed Jan 28 11:06:29 2026 UTC"
+#define DATE "built on: Wed Apr 15 14:56:19 2026 UTC"
 
 /*
  * Generate compiler_flags as an array of individual characters. This is a
@@ -22,9 +22,6 @@ static const char compiler_flags[] = {
     'c','o','m','p','i','l','e','r',':',' ','g','c','c',' ','-','f',
     'P','I','C',' ','-','p','t','h','r','e','a','d',' ','-','W','a',
     'l','l',' ','-','O','3',' ','-','D','O','P','E','N','S','S','L',
-    '_','U','S','E','_','N','O','D','E','L','E','T','E',' ','-','D',
-    'O','P','E','N','S','S','L','_','P','I','C',' ','-','D','O','P',
-    'E','N','S','S','L','_','B','U','I','L','D','I','N','G','_','O',
-    'P','E','N','S','S','L',' ','-','D','N','D','E','B','U','G',' ',
-    '-','D','L','_','E','N','D','I','A','N','\0'
+    '_','P','I','C',' ','-','D','N','D','E','B','U','G',' ','-','D',
+    'L','_','E','N','D','I','A','N','\0'
 };

@@ -1,5 +1,5 @@
 /*
- * Copyright 1995-2023 The OpenSSL Project Authors. All Rights Reserved.
+ * Copyright 1995-2026 The OpenSSL Project Authors. All Rights Reserved.
  *
  * Licensed under the Apache License 2.0 (the "License").  You may not use
  * this file except in compliance with the License.  You can obtain a copy
@@ -30,7 +30,6 @@
 #include "crypto/pkcs12err.h"
 #include "crypto/randerr.h"
 #include "internal/dsoerr.h"
-#include "crypto/engineerr.h"
 #include "crypto/uierr.h"
 #include "crypto/httperr.h"
 #include "crypto/ocsperr.h"
@@ -40,6 +39,7 @@
 #include "crypto/cmperr.h"
 #include "crypto/cterr.h"
 #include "crypto/asyncerr.h"
+#include "crypto/sm2err.h"
 #include "crypto/storeerr.h"
 #include "crypto/esserr.h"
 #include "internal/propertyerr.h"
@@ -82,9 +82,6 @@ int ossl_err_load_crypto_strings(void)
 #ifndef OPENSSL_NO_TS
         || ossl_err_load_TS_strings() == 0
 #endif
-#ifndef OPENSSL_NO_ENGINE
-        || ossl_err_load_ENGINE_strings() == 0
-#endif
 #ifndef OPENSSL_NO_HTTP
         || ossl_err_load_HTTP_strings() == 0
 #endif
@@ -104,6 +101,9 @@ int ossl_err_load_crypto_strings(void)
 #endif
         || ossl_err_load_ESS_strings() == 0
         || ossl_err_load_ASYNC_strings() == 0
+#ifndef OPENSSL_NO_SM2
+        || ossl_err_load_SM2_strings() == 0
+#endif
         || ossl_err_load_OSSL_STORE_strings() == 0
         || ossl_err_load_PROP_strings() == 0
         || ossl_err_load_PROV_strings() == 0

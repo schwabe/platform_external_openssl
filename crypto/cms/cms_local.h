@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2025 The OpenSSL Project Authors. All Rights Reserved.
+ * Copyright 2008-2026 The OpenSSL Project Authors. All Rights Reserved.
  *
  * Licensed under the Apache License 2.0 (the "License").  You may not use
  * this file except in compliance with the License.  You can obtain a copy
@@ -35,8 +35,7 @@ typedef struct CMS_OriginatorPublicKey_st CMS_OriginatorPublicKey;
 typedef struct CMS_OriginatorIdentifierOrKey_st CMS_OriginatorIdentifierOrKey;
 typedef struct CMS_KeyAgreeRecipientInfo_st CMS_KeyAgreeRecipientInfo;
 typedef struct CMS_RecipientKeyIdentifier_st CMS_RecipientKeyIdentifier;
-typedef struct CMS_KeyAgreeRecipientIdentifier_st
-    CMS_KeyAgreeRecipientIdentifier;
+typedef struct CMS_KeyAgreeRecipientIdentifier_st CMS_KeyAgreeRecipientIdentifier;
 typedef struct CMS_KEKIdentifier_st CMS_KEKIdentifier;
 typedef struct CMS_KEKRecipientInfo_st CMS_KEKRecipientInfo;
 typedef struct CMS_PasswordRecipientInfo_st CMS_PasswordRecipientInfo;
@@ -390,7 +389,7 @@ struct CMS_ReceiptsFrom_st {
 
 struct CMS_Receipt_st {
     int32_t version;
-    ASN1_OBJECT *contentType;
+    const ASN1_OBJECT *contentType;
     ASN1_OCTET_STRING *signedContentIdentifier;
     ASN1_OCTET_STRING *originatorSignatureValue;
 };
@@ -425,7 +424,7 @@ const char *ossl_cms_ctx_get0_propq(const CMS_CTX *ctx);
 void ossl_cms_resolve_libctx(CMS_ContentInfo *ci);
 
 CMS_ContentInfo *ossl_cms_Data_create(OSSL_LIB_CTX *ctx, const char *propq);
-int ossl_cms_DataFinal(CMS_ContentInfo *cms, BIO *cmsbio,
+int ossl_cms_DataFinal(CMS_ContentInfo *cms, BIO *cmsbio, BIO *data,
     const unsigned char *precomp_md,
     unsigned int precomp_mdlen);
 
@@ -437,7 +436,7 @@ int ossl_cms_DigestedData_do_final(const CMS_ContentInfo *cms,
     BIO *chain, int verify);
 
 BIO *ossl_cms_SignedData_init_bio(CMS_ContentInfo *cms);
-int ossl_cms_SignedData_final(CMS_ContentInfo *cms, BIO *chain,
+int ossl_cms_SignedData_final(CMS_ContentInfo *cms, BIO *chain, BIO *data,
     const unsigned char *precomp_md,
     unsigned int precomp_mdlen);
 int ossl_cms_set1_SignerIdentifier(CMS_SignerIdentifier *sid, X509 *cert,

@@ -279,11 +279,16 @@ function generate_build_config_headers() {
   fi
 
   # Search for *.in files to transform them to *.h/*.c files
-  local list_existing_in_files=$(find crypto include providers -name '*.in' | awk '{gsub(/\.in/, ""); print}' | sort -u)
-  echo -e "Found *.in files are:\n$list_existing_in_files\n"
-  for input_in_files in ${list_existing_in_files[@]}; do make $input_in_files || true; done
+  local input_in_files=$(find crypto include providers -name '*.in' | sed -e 's/\.inc\.in$/.inc/' -e 's/\.c\.in$/.c/'  -e 's/\.h\.in$/.h/'| sort -u)
+    for inputfile in "${input_in_files[@]}"
+  do
+    if [ -n "${inputfile}" ]; then
+      echo building ${inputfile}
+      make ${inputfile}
+    fi
+  done
 
-  mv -f include/crypto/bn_conf.h include/crypto/bn_conf-$outname.h
+  #mv -f include/crypto/bn_conf.h include/crypto/bn_conf-$outname.h
   # Remove "NO_ASM" Config-Defines in Config-Headers caused from "linux-generic32/64" Config-Flags
   cat include/openssl/configuration.h | awk '/NO_ASM/{skip=1; next} skip{skip--; next} {print}' > include/openssl/configuration-$outname.h
 
@@ -575,6 +580,7 @@ function import() {
   gen_asm_arm64 crypto/sha/asm/sha512-armv8.pl
   gen_asm_arm64 crypto/arm64cpuid.pl
   gen_asm_arm64 crypto/poly1305/asm/poly1305-armv8.pl
+  gen_asm_arm64 crypto/poly1305/asm/poly1305-armv9-sve2.pl
   gen_asm_arm64 crypto/ec/asm/ecp_nistz256-armv8.pl
   gen_asm_arm64 crypto/ec/asm/ecp_sm2p256-armv8.pl
   gen_asm_arm64 crypto/bn/asm/armv8-mont.pl
@@ -665,10 +671,6 @@ function import() {
     gen_asm_x86_64 crypto/sm4/asm/sm4-x86_64.pl
     gen_asm_x86_64 crypto/x86_64cpuid.pl
 
-  ls -l util
-  ${PERL_EXE} "-I." "-Iutil/perl" "-Mconfigdata" "-MOpenSSL::paramnames" "util/dofile.pl" "-oMakefile" providers/implementations/include/prov/blake2_params.inc.in > providers/implementations/include/prov/blake2_params.inc
-
-
   cd ..
 
   generate_config_mk Crypto-config-target.mk CRYPTO target
@@ -684,7 +686,7 @@ function import() {
   NEEDED_SOURCES="$NEEDED_SOURCES"
   for i in $NEEDED_SOURCES; do
     echo "Updating $i"
-    rm -r $i
+    rm -rf $i
     mv $OPENSSL_DIR/$i .
   done
 

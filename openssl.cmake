@@ -8,6 +8,7 @@ set(crypto_srcs
         crypto/aes/aes_misc.c
         crypto/aes/aes_ofb.c
         crypto/aes/aes_wrap.c
+        crypto/aligned_alloc.c
         crypto/aria/aria.c
         crypto/array_alloc.c
         crypto/asn1_dsa.c
@@ -26,6 +27,7 @@ set(crypto_srcs
         crypto/asn1/a_strex.c
         crypto/asn1/a_strnid.c
         crypto/asn1/a_time.c
+        crypto/asn1/a_time_posix.c
         crypto/asn1/a_type.c
         crypto/asn1/a_utctm.c
         crypto/asn1/a_utf8.c
@@ -121,7 +123,6 @@ set(crypto_srcs
         crypto/bn/bn_err.c
         crypto/bn/bn_exp.c
         crypto/bn/bn_exp2.c
-        crypto/bn/bn_rsa_fips186_4.c
         crypto/bn/bn_gcd.c
         crypto/bn/bn_gf2m.c
         crypto/bn/bn_intern.c
@@ -136,6 +137,7 @@ set(crypto_srcs
         crypto/bn/bn_print.c
         crypto/bn/bn_rand.c
         crypto/bn/bn_recp.c
+        crypto/bn/bn_rsa_fips186_5.c
         crypto/bn/bn_shift.c
         crypto/bn/bn_sqr.c
         crypto/bn/bn_sqrt.c
@@ -234,7 +236,6 @@ set(crypto_srcs
         crypto/dh/dh_key.c
         crypto/dh/dh_lib.c
         crypto/dh/dh_meth.c
-        crypto/dh/dh_pmeth.c
         crypto/dh/dh_rfc5114.c
         crypto/dsa/dsa_ameth.c
         crypto/dsa/dsa_asn1.c
@@ -247,7 +248,6 @@ set(crypto_srcs
         crypto/dsa/dsa_lib.c
         crypto/dsa/dsa_meth.c
         crypto/dsa/dsa_ossl.c
-        crypto/dsa/dsa_pmeth.c
         crypto/dsa/dsa_prn.c
         crypto/dsa/dsa_sign.c
         crypto/dsa/dsa_vrf.c
@@ -281,7 +281,6 @@ set(crypto_srcs
         crypto/ec/ec_lib.c
         crypto/ec/ec_mult.c
         crypto/ec/ec_oct.c
-        crypto/ec/ec_pmeth.c
         crypto/ec/ec_print.c
         crypto/ec/ecdh_kdf.c
         crypto/ec/ecdh_ossl.c
@@ -306,27 +305,6 @@ set(crypto_srcs
         crypto/encode_decode/encoder_lib.c
         crypto/encode_decode/encoder_meth.c
         crypto/encode_decode/encoder_pkey.c
-        crypto/engine/eng_all.c
-        crypto/engine/eng_cnf.c
-        crypto/engine/eng_ctrl.c
-        crypto/engine/eng_dyn.c
-        crypto/engine/eng_err.c
-        crypto/engine/eng_fat.c
-        crypto/engine/eng_init.c
-        crypto/engine/eng_lib.c
-        crypto/engine/eng_list.c
-        crypto/engine/eng_openssl.c
-        crypto/engine/eng_pkey.c
-        crypto/engine/eng_table.c
-        crypto/engine/tb_asnmth.c
-        crypto/engine/tb_cipher.c
-        crypto/engine/tb_dh.c
-        crypto/engine/tb_digest.c
-        crypto/engine/tb_dsa.c
-        crypto/engine/tb_eckey.c
-        crypto/engine/tb_pkmeth.c
-        crypto/engine/tb_rand.c
-        crypto/engine/tb_rsa.c
         crypto/err/err_save.c
         crypto/err/openssl.ec
         crypto/err/err_mark.c
@@ -342,10 +320,8 @@ set(crypto_srcs
         crypto/evp/bio_b64.c
         crypto/evp/bio_enc.c
         crypto/evp/bio_md.c
-        crypto/evp/bio_ok.c
         crypto/evp/c_allc.c
         crypto/evp/c_alld.c
-        crypto/evp/cmeth_lib.c
         crypto/evp/ctrl_params_translate.c
         crypto/evp/dh_ctrl.c
         crypto/evp/dh_support.c
@@ -370,6 +346,8 @@ set(crypto_srcs
         crypto/evp/ec_ctrl.c
         crypto/evp/ec_support.c
         crypto/evp/encode.c
+        crypto/evp/enc_b64_avx2.c
+        crypto/evp/enc_b64_scalar.c
         crypto/evp/evp_cnf.c
         crypto/evp/evp_enc.c
         crypto/evp/evp_err.c
@@ -469,7 +447,6 @@ set(crypto_srcs
         crypto/o_fopen.c
         crypto/o_init.c
         crypto/o_str.c
-        crypto/o_time.c
         crypto/objects/o_names.c
         crypto/objects/obj_dat.c
         crypto/objects/obj_err.c
@@ -562,14 +539,12 @@ set(crypto_srcs
         crypto/rsa/rsa_err.c
         crypto/rsa/rsa_gen.c
         crypto/rsa/rsa_lib.c
-        crypto/rsa/rsa_meth.c
         crypto/rsa/rsa_mp.c
         crypto/rsa/rsa_mp_names.c
         crypto/rsa/rsa_none.c
         crypto/rsa/rsa_oaep.c
         crypto/rsa/rsa_ossl.c
         crypto/rsa/rsa_pk1.c
-        crypto/rsa/rsa_pmeth.c
         crypto/rsa/rsa_prn.c
         crypto/rsa/rsa_pss.c
         crypto/rsa/rsa_saos.c
@@ -584,6 +559,7 @@ set(crypto_srcs
         crypto/sha/sha1dgst.c
         crypto/sha/sha256.c
         crypto/sha/sha3.c
+        crypto/sha/sha3_encode.c
         crypto/sha/sha512.c
         crypto/siphash/siphash.c
         crypto/sleep.c
@@ -764,6 +740,7 @@ elseif (${ANDROID_ABI} STREQUAL "arm64-v8a")
             crypto/modes/asm/aes-gcm-armv8_64.S
             crypto/modes/aes-gcm-armv8-unroll8_64.S
             crypto/poly1305/asm/poly1305-armv8.S
+            crypto/poly1305/asm/poly1305-armv9-sve2.S
             crypto/sha/asm/sha1-armv8.S
             crypto/sha/asm/sha256-armv8.S
             crypto/sha/asm/sha512-armv8.S
@@ -967,10 +944,12 @@ set(provider_srcs
         providers/implementations/digests/blake2_prov.c
         providers/implementations/digests/blake2b_prov.c
         providers/implementations/digests/blake2s_prov.c
+        providers/implementations/digests/cshake_prov.c
         providers/implementations/digests/digestcommon.c
         providers/implementations/digests/md4_prov.c
         providers/implementations/digests/md5_prov.c
         providers/implementations/digests/md5_sha1_prov.c
+        providers/implementations/digests/ml_dsa_mu_prov.c
         providers/implementations/digests/null_prov.c
         providers/implementations/digests/sha2_prov.c
         providers/implementations/digests/sha3_prov.c
@@ -998,6 +977,8 @@ set(provider_srcs
         providers/implementations/kdfs/hmacdrbg_kdf.c
         providers/implementations/kdfs/kbkdf.c
         providers/implementations/kdfs/krb5kdf.c
+        providers/implementations/kdfs/snmpkdf.c
+        providers/implementations/kdfs/srtpkdf.c
         providers/implementations/kdfs/pbkdf2.c
         providers/implementations/kdfs/pkcs12kdf.c
         providers/implementations/kdfs/pvkkdf.c
@@ -1099,6 +1080,7 @@ target_compile_options(crypto PRIVATE -Wno-missing-field-initializers -Wno-unuse
         -DL_ENDIAN
         -DSTATIC_LEGACY
         -DOPENSSL_NO_SM2_PRECOMP
+        -fPIC
         )
 
 if (${ANDROID_ABI} STREQUAL "armeabi-v7a")
@@ -1171,6 +1153,11 @@ set(ssl_srcs
         ssl/d1_lib.c
         ssl/d1_msg.c
         ssl/d1_srtp.c
+        ssl/ech/ech_store.c
+        ssl/ech/ech_ssl_apis.c
+        ssl/ech/ech_helper.c
+        ssl/ech/ech_local.h
+        ssl/ech/ech_internal.c
         ssl/methods.c
         ssl/pqueue.c
         ssl/priority_queue.c
@@ -1221,7 +1208,6 @@ set(ssl_srcs
         ssl/record/methods/tls_multib.c
         ssl/record/methods/tls_pad.c
         ssl/record/methods/tls1_meth.c
-        ssl/record/methods/ssl3_meth.c
         ssl/record/methods/tls13_meth.c
         ssl/record/methods/dtls_meth.c
         ssl/record/methods/ssl3_cbc.c

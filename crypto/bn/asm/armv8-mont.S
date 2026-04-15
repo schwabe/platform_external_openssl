@@ -1034,7 +1034,7 @@ __bn_sqr8x_mont:
 	umulh	x16,x10,x6
 	stp	x19,x20,[x2],#8*2	// t[0..1]
 	adc	x19,xzr,xzr		// t[8]
-	adds	x21,x21,x17		// t[2]+lo(a[1]*a[0])
+	adds	x21,x21,x17		// t[2]+hi(a[1]*a[0])
 	umulh	x17,x11,x6
 	adcs	x22,x22,x14
 	umulh	x14,x12,x6
