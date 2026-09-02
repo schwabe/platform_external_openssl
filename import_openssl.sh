@@ -600,6 +600,7 @@ function import() {
   # Generate x86 asm
   gen_asm_x86 crypto/x86cpuid.pl
   gen_asm_x86 crypto/aes/asm/vpaes-x86.pl
+  gen_asm_x86 crypto/aes/asm/aes-586.pl
   gen_asm_x86 crypto/aes/asm/aesni-x86.pl
   gen_asm_x86 crypto/bn/asm/bn-586.pl
   gen_asm_x86 crypto/bn/asm/co-586.pl

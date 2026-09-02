@@ -755,7 +755,7 @@ elseif (${ANDROID_ABI} STREQUAL "arm64-v8a")
             )
 elseif (${ANDROID_ABI} STREQUAL "x86")
     set(crypto_srcs ${crypto_srcs}
-            crypto/aes/aes_x86core.c
+            crypto/aes/asm/aes-586.S
             crypto/aes/asm/aesni-x86.S
             crypto/aes/asm/vpaes-x86.S
             crypto/bf/asm/bf-586.S
@@ -777,6 +777,7 @@ elseif (${ANDROID_ABI} STREQUAL "x86")
             crypto/x86cpuid.S
             )
     list(REMOVE_ITEM crypto_srcs
+            crypto/aes/aes_cbc.c
             crypto/bf/bf_enc.c
             crypto/bn/bn_asm.c
             crypto/des/des_enc.c
