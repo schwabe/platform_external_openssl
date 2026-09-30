@@ -524,6 +524,7 @@ set(crypto_srcs
         crypto/rand/rand_pool.c
         crypto/rand/rand_uniform.c
         crypto/rand/randfile.c
+        crypto/rbtree/rbtree.c
         crypto/rc2/rc2_cbc.c
         crypto/rc2/rc2_ecb.c
         crypto/rc2/rc2_skey.c
@@ -1187,12 +1188,12 @@ set(ssl_srcs
         ssl/quic/quic_record_util.c
         ssl/quic/quic_rstream.c
         ssl/quic/quic_rx_depack.c
-        ssl/quic/quic_sf_list.c
         ssl/quic/quic_srt_gen.c
         ssl/quic/quic_srtm.c
         ssl/quic/quic_sstream.c
         ssl/quic/quic_statm.c
         ssl/quic/quic_stream_map.c
+        ssl/quic/quic_strm_reas.c
         ssl/quic/quic_thread_assist.c
         ssl/quic/quic_tls.c
         ssl/quic/quic_tls_api.c
