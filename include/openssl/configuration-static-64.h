@@ -28,7 +28,7 @@ extern "C" {
  */
 
 /* clang-format off */
-# define OPENSSL_CONFIGURED_API 40000
+# define OPENSSL_CONFIGURED_API 40100
 # ifndef OPENSSL_RAND_SEED_OS
 #  define OPENSSL_RAND_SEED_OS
 # endif
@@ -43,6 +43,9 @@ extern "C" {
 # endif
 # ifndef OPENSSL_NO_ASAN
 #  define OPENSSL_NO_ASAN
+# endif
+# ifndef OPENSSL_NO_ATEXIT
+#  define OPENSSL_NO_ATEXIT
 # endif
 # ifndef OPENSSL_NO_BROTLI
 #  define OPENSSL_NO_BROTLI
@@ -59,6 +62,9 @@ extern "C" {
 # ifndef OPENSSL_NO_CRYPTO_MDEBUG
 #  define OPENSSL_NO_CRYPTO_MDEBUG
 # endif
+# ifndef OPENSSL_NO_CT_VALIDATION
+#  define OPENSSL_NO_CT_VALIDATION
+# endif
 # ifndef OPENSSL_NO_DEMOS
 #  define OPENSSL_NO_DEMOS
 # endif
@@ -73,6 +79,9 @@ extern "C" {
 # endif
 # ifndef OPENSSL_NO_DTLS1_2
 #  define OPENSSL_NO_DTLS1_2
+# endif
+# ifndef OPENSSL_NO_DTLS1_3
+#  define OPENSSL_NO_DTLS1_3
 # endif
 # ifndef OPENSSL_NO_DYNAMIC_ENGINE
 #  define OPENSSL_NO_DYNAMIC_ENGINE
@@ -118,6 +127,9 @@ extern "C" {
 # endif
 # ifndef OPENSSL_NO_IDEA
 #  define OPENSSL_NO_IDEA
+# endif
+# ifndef OPENSSL_NO_IKEV2KDF
+#  define OPENSSL_NO_IKEV2KDF
 # endif
 # ifndef OPENSSL_NO_JITTER
 #  define OPENSSL_NO_JITTER
@@ -181,6 +193,9 @@ extern "C" {
 # endif
 # ifndef OPENSSL_NO_UNIT_TEST
 #  define OPENSSL_NO_UNIT_TEST
+# endif
+# ifndef OPENSSL_NO_UNIT_TESTS
+#  define OPENSSL_NO_UNIT_TESTS
 # endif
 # ifndef OPENSSL_NO_UPLINK
 #  define OPENSSL_NO_UPLINK

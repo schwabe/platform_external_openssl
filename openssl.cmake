@@ -2,6 +2,7 @@ enable_language(ASM)
 
 set(crypto_srcs
         crypto/aes/aes_cbc.c
+        crypto/aes/aes_cbc_vaes_intrinsic.c
         crypto/aes/aes_cfb.c
         crypto/aes/aes_ecb.c
         crypto/aes/aes_ige.c
@@ -561,6 +562,7 @@ set(crypto_srcs
         crypto/sha/sha256.c
         crypto/sha/sha3.c
         crypto/sha/sha3_encode.c
+        crypto/sha/sha3_x4_avx512vl.c
         crypto/sha/sha512.c
         crypto/siphash/siphash.c
         crypto/sleep.c
@@ -787,6 +789,7 @@ elseif (${ANDROID_ABI} STREQUAL "x86")
 elseif (${ANDROID_ABI} STREQUAL "x86_64")
     set(crypto_srcs ${crypto_srcs}
             crypto/aes/asm/aes-x86_64.S
+            crypto/aes/asm/aes-cbc-vaes-x86_64.S
             crypto/aes/asm/aesni-mb-x86_64.S
             crypto/aes/asm/aesni-sha1-x86_64.S
             crypto/aes/asm/aesni-sha256-x86_64.S
@@ -808,6 +811,7 @@ elseif (${ANDROID_ABI} STREQUAL "x86_64")
             crypto/modes/asm/aesni-gcm-x86_64.S
             crypto/modes/asm/ghash-x86_64.S
             crypto/modes/asm/aes-gcm-avx512.S
+            crypto/ml_dsa/asm/ml_dsa_ntt-x86_64.S
             crypto/poly1305/asm/poly1305-x86_64.S
             crypto/rc4/asm/rc4-md5-x86_64.S
             crypto/rc4/asm/rc4-x86_64.S
@@ -817,9 +821,7 @@ elseif (${ANDROID_ABI} STREQUAL "x86_64")
             crypto/sha/asm/sha256-x86_64.S
             crypto/sha/asm/sha512-x86_64.S
             crypto/sha/asm/keccak1600-x86_64.S
-            #crypto/sha/asm/keccak1600-avx2.S
-            #crypto/sha/asm/keccak1600-avx512.S
-            #crypto/sha/asm/keccak1600-avx512vl.S
+            crypto/sha/asm/keccak1600x4-avx512vl.S
             crypto/ec/asm/x25519-x86_64.S
             crypto/x86_64cpuid.S
             crypto/aes/asm/aesni-xts-avx512.S
@@ -884,13 +886,14 @@ set(provider_srcs
         providers/implementations/ciphers/cipher_aes_cbc_hmac_sha512_etm_hw.c
         providers/implementations/ciphers/cipher_aes_ccm.c
         providers/implementations/ciphers/cipher_aes_ccm_hw.c
-        providers/implementations/ciphers/cipher_aes_cfb_hw.c
         providers/implementations/ciphers/cipher_aes_gcm.c
         providers/implementations/ciphers/cipher_aes_gcm_hw.c
         providers/implementations/ciphers/cipher_aes_gcm_siv.c
         providers/implementations/ciphers/cipher_aes_gcm_siv_hw.c
         providers/implementations/ciphers/cipher_aes_gcm_siv_polyval.c
         providers/implementations/ciphers/cipher_aes_hw.c
+        providers/implementations/ciphers/cipher_aes_hw_aesni.c
+        providers/implementations/ciphers/cipher_aes_hw_armv8.c
         providers/implementations/ciphers/cipher_aes_ocb.c
         providers/implementations/ciphers/cipher_aes_ocb_hw.c
         providers/implementations/ciphers/cipher_aes_siv.c
@@ -1068,7 +1071,7 @@ target_include_directories(crypto PRIVATE
         )
 
 target_compile_definitions(crypto PRIVATE -DNO_WINDOWS_BRAINDEATH -DMODULESDIR="ossl-modules" -DOPENSSL_BUILDING_OPENSSL)
-target_compile_options(crypto PRIVATE -Wno-missing-field-initializers -Wno-unused-parameter
+target_compile_options(crypto PRIVATE -Wno-missing-field-initializers -Wno-unused-parameter -Wno-ignored-attributes
         -DMD5_ASM
         -DKECCAK1600_ASM
         -DNDEBUG
@@ -1082,6 +1085,7 @@ target_compile_options(crypto PRIVATE -Wno-missing-field-initializers -Wno-unuse
         -DL_ENDIAN
         -DSTATIC_LEGACY
         -DOPENSSL_NO_SM2_PRECOMP
+        -DOPENSSL_NO_IKEV2KDF
         -fPIC
         )
 
@@ -1155,6 +1159,8 @@ set(ssl_srcs
         ssl/d1_lib.c
         ssl/d1_msg.c
         ssl/d1_srtp.c
+        ssl/d1_transcript.c
+        ssl/dgram_demux.c
         ssl/ech/ech_store.c
         ssl/ech/ech_ssl_apis.c
         ssl/ech/ech_helper.c

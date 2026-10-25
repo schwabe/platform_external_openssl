@@ -1,4 +1,4 @@
-#include "arm_arch.h"
+#include "arch/arm_arch.h"
 
 #if defined(__thumb2__) && !defined(__APPLE__)
 .syntax	unified
@@ -49,6 +49,7 @@ OPENSSL_atomic_add:
 
 .globl	OPENSSL_cleanse
 .type	OPENSSL_cleanse,%function
+.align	5
 OPENSSL_cleanse:
 	eor	ip,ip,ip
 	cmp	r1,#7
@@ -88,7 +89,7 @@ OPENSSL_cleanse:
 
 .globl	CRYPTO_memcmp
 .type	CRYPTO_memcmp,%function
-.align	4
+.align	5
 CRYPTO_memcmp:
 	eor	ip,ip,ip
 	cmp	r2,#0
@@ -130,6 +131,7 @@ _armv7_neon_probe:
 
 .globl	_armv7_tick
 .type	_armv7_tick,%function
+.align	5
 _armv7_tick:
 #ifdef	__APPLE__
 	mrrc	p15,0,r0,r1,c14		@ CNTPCT
@@ -141,6 +143,7 @@ _armv7_tick:
 
 .globl	_armv8_aes_probe
 .type	_armv8_aes_probe,%function
+.align	5
 _armv8_aes_probe:
 #if defined(__thumb2__) && !defined(__APPLE__)
 .byte	0xb0,0xff,0x00,0x03	@ aese.8	q0,q0
@@ -152,6 +155,7 @@ _armv8_aes_probe:
 
 .globl	_armv8_sha1_probe
 .type	_armv8_sha1_probe,%function
+.align	5
 _armv8_sha1_probe:
 #if defined(__thumb2__) && !defined(__APPLE__)
 .byte	0x00,0xef,0x40,0x0c	@ sha1c.32	q0,q0,q0
@@ -163,6 +167,7 @@ _armv8_sha1_probe:
 
 .globl	_armv8_sha256_probe
 .type	_armv8_sha256_probe,%function
+.align	5
 _armv8_sha256_probe:
 #if defined(__thumb2__) && !defined(__APPLE__)
 .byte	0x00,0xff,0x40,0x0c	@ sha256h.32	q0,q0,q0
@@ -173,6 +178,7 @@ _armv8_sha256_probe:
 .size	_armv8_sha256_probe,.-_armv8_sha256_probe
 .globl	_armv8_pmull_probe
 .type	_armv8_pmull_probe,%function
+.align	5
 _armv8_pmull_probe:
 #if defined(__thumb2__) && !defined(__APPLE__)
 .byte	0xa0,0xef,0x00,0x0e	@ vmull.p64	q0,d0,d0
@@ -185,6 +191,7 @@ _armv8_pmull_probe:
 
 .globl	OPENSSL_instrument_bus
 .type	OPENSSL_instrument_bus,%function
+.align	5
 OPENSSL_instrument_bus:
 	eor	r0,r0,r0
 #if __ARM_ARCH__>=5
@@ -198,6 +205,7 @@ OPENSSL_instrument_bus:
 
 .globl	OPENSSL_instrument_bus2
 .type	OPENSSL_instrument_bus2,%function
+.align	5
 OPENSSL_instrument_bus2:
 	eor	r0,r0,r0
 #if __ARM_ARCH__>=5

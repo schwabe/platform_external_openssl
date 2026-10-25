@@ -278,6 +278,8 @@ function generate_build_config_headers() {
     fi
   fi
 
+  # This does not build in non-FIPS builds, so remove it so the code below does not try to build it:
+  rm -f ./providers/fips/fipsparams.inc.in
   # Search for *.in files to transform them to *.h/*.c files
   local input_in_files=$(find crypto include providers -name '*.in' | sed -e 's/\.inc\.in$/.inc/' -e 's/\.c\.in$/.c/'  -e 's/\.h\.in$/.h/'| sort -u)
     for inputfile in "${input_in_files[@]}"
@@ -288,7 +290,35 @@ function generate_build_config_headers() {
     fi
   done
 
-  #mv -f include/crypto/bn_conf.h include/crypto/bn_conf-$outname.h
+  # Generate the error headers
+  make crypto/sslerr.h crypto/bn/bn_prime.h crypto/conf/conf_def.h crypto/objects/obj_xref.h crypto/asn1/charmap.h \
+       include/crypto/asn1err.h include/crypto/asyncerr.h include/crypto/bioerr.h include/crypto/bnerr.h include/crypto/buffererr.h \
+       include/crypto/cmperr.h include/crypto/cmserr.h include/crypto/comperr.h include/crypto/conferr.h include/crypto/crmferr.h \
+       include/crypto/cryptoerr.h include/crypto/cterr.h include/crypto/decodererr.h include/crypto/dherr.h include/crypto/dsaerr.h \
+       include/crypto/ecerr.h include/crypto/encodererr.h include/crypto/esserr.h include/crypto/evperr.h include/crypto/httperr.h \
+       include/crypto/objectserr.h include/crypto/ocsperr.h include/crypto/pemerr.h include/crypto/pkcs12err.h include/crypto/pkcs7err.h \
+       include/crypto/randerr.h include/crypto/rsaerr.h include/crypto/sm2err.h include/crypto/storeerr.h include/crypto/tserr.h \
+       include/crypto/uierr.h include/crypto/x509err.h include/crypto/x509v3err.h include/internal/dsoerr.h include/internal/propertyerr.h \
+       include/openssl/asn1err.h include/openssl/asyncerr.h include/openssl/bioerr.h include/openssl/bnerr.h include/openssl/buffererr.h \
+       include/openssl/cmperr.h include/openssl/cmserr.h include/openssl/comperr.h include/openssl/conferr.h include/openssl/crmferr.h \
+       include/openssl/cryptoerr.h include/openssl/cterr.h include/openssl/decodererr.h include/openssl/dherr.h include/openssl/dsaerr.h \
+       include/openssl/ecerr.h include/openssl/encodererr.h include/openssl/err.h include/openssl/esserr.h include/openssl/evperr.h \
+       include/openssl/httperr.h include/openssl/objectserr.h include/openssl/ocsperr.h include/openssl/pemerr.h include/openssl/pkcs12err.h \
+       include/openssl/pkcs7err.h include/openssl/proverr.h include/openssl/randerr.h include/openssl/rsaerr.h include/openssl/sslerr.h \
+       include/openssl/storeerr.h include/openssl/tserr.h include/openssl/uierr.h include/openssl/x509err.h include/openssl/x509v3err.h \
+       providers/common/include/prov/proverr.h
+
+  # Generate error c files
+  make crypto/crmf/crmf_err.c crypto/ssl_err.c crypto/asn1/asn1_err.c crypto/ui/ui_err.c crypto/pem/pem_err.c crypto/cmp/cmp_err.c \
+       crypto/cpt_err.c crypto/bio/bio_err.c crypto/pkcs12/pk12err.c crypto/dh/dh_err.c crypto/encode_decode/decoder_err.c \
+       crypto/encode_decode/encoder_err.c crypto/property/property_err.c crypto/err/err.c crypto/rsa/rsa_err.c crypto/ct/ct_err.c \
+       crypto/async/async_err.c crypto/ec/ec_err.c crypto/dsa/dsa_err.c crypto/dso/dso_err.c crypto/objects/obj_err.c crypto/comp/comp_err.c \
+       crypto/x509/v3err.c crypto/x509/x509_err.c crypto/cms/cms_err.c crypto/http/http_err.c crypto/evp/evp_err.c crypto/ess/ess_err.c \
+       crypto/sm2/sm2_err.c crypto/bn/bn_err.c crypto/ocsp/ocsp_err.c crypto/rand/rand_err.c crypto/conf/conf_err.c crypto/ts/ts_err.c \
+       crypto/pkcs7/pkcs7err.c crypto/store/store_err.c crypto/buffer/buf_err.c providers/common/provider_err.c
+
+  make include/openssl/obj_mac.h crypto/objects/obj_dat.h
+
   # Remove "NO_ASM" Config-Defines in Config-Headers caused from "linux-generic32/64" Config-Flags
   cat include/openssl/configuration.h | awk '/NO_ASM/{skip=1; next} skip{skip--; next} {print}' > include/openssl/configuration-$outname.h
 
@@ -629,6 +659,7 @@ function import() {
   # Generate x86_64 asm
     gen_asm_x86_64 crypto/aes/asm/aes-cfb-avx512.pl
     gen_asm_x86_64 crypto/aes/asm/aes-x86_64.pl
+    gen_asm_x86_64 crypto/aes/asm/aes-cbc-vaes-x86_64.pl
     gen_asm_x86_64 crypto/aes/asm/aesni-mb-x86_64.pl
     gen_asm_x86_64 crypto/aes/asm/aesni-sha1-x86_64.pl
     gen_asm_x86_64 crypto/aes/asm/aesni-sha256-x86_64.pl
@@ -663,6 +694,7 @@ function import() {
     gen_asm_x86_64 crypto/sha/asm/keccak1600-avx512.pl
     gen_asm_x86_64 crypto/sha/asm/keccak1600-avx512vl.pl
     gen_asm_x86_64 crypto/sha/asm/keccak1600-x86_64.pl
+    gen_asm_x86_64 crypto/sha/asm/keccak1600x4-avx512vl.pl
     gen_asm_x86_64 crypto/sha/asm/sha1-mb-x86_64.pl
     gen_asm_x86_64 crypto/sha/asm/sha1-x86_64.pl
     gen_asm_x86_64 crypto/sha/asm/sha256-mb-x86_64.pl
@@ -671,6 +703,8 @@ function import() {
     gen_asm_x86_64 crypto/sm3/asm/sm3-x86_64.pl
     gen_asm_x86_64 crypto/sm4/asm/sm4-x86_64.pl
     gen_asm_x86_64 crypto/x86_64cpuid.pl
+    gen_asm_x86_64 crypto/ml_dsa/asm/ml_dsa_ntt-x86_64.pl
+
 
   cd ..
 

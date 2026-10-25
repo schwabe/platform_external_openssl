@@ -1,4 +1,4 @@
-#include "arm_arch.h"
+#include "arch/arm_arch.h"
 
 
 #define CIPHER_KEY	0
@@ -86,6 +86,7 @@
 .word	0xca62c1d6, 0xca62c1d6, 0xca62c1d6, 0xca62c1d6
 .text
 
+.align	4
 asm_aescbc_sha1_hmac:
 	AARCH64_VALID_CALL_TARGET
 

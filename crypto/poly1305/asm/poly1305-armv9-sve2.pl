@@ -104,7 +104,7 @@ my ($pwr,$mask) = map("x$_",(25..26));
 my $is_base2_26 = "w17";
 
 $code.=<<___;
-#include "arm_arch.h"
+#include "arch/arm_arch.h"
 
 .text
 
@@ -304,6 +304,7 @@ poly1305_lazy_reduce_sve2:
 //  a VLA risc-v implementation in https://github.com/dot-asm/cryptogams.
 //
 .globl	poly1305_blocks_sve2
+.hidden	poly1305_blocks_sve2
 .type	poly1305_blocks_sve2,%function
 .align	5
 poly1305_blocks_sve2:
